@@ -1,0 +1,7 @@
+# Backend dependencies
+backend/node_modules
+backend/.env
+
+# Client dependencies
+client/node_modules
+client/.next
