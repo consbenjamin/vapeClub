@@ -13,6 +13,10 @@ const ProductoSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  marca: {
+    type: String,
+    required: true
+  },
   sabores: [
     {
       sabor: {

@@ -3,6 +3,8 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 require("dotenv").config();
 
+const productosRoutes = require('./routes/productos');
+
 const app = express();
 const PORT = process.env.PORT || 5001;
 
@@ -13,6 +15,8 @@ app.use(cors({
   origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
 }));
+
+app.use("/api/productos", productosRoutes);
 
 
 mongoose.connect(process.env.MONGODB_URI)
