@@ -63,7 +63,7 @@ export default function AdminDashboard() {
         onAddProduct={handleAddProduct} 
       />
       <div className="flex-1 p-6 overflow-auto">
-        <h1 className="text-2xl font-bold mb-6">Admin Dashboard - Productos</h1>
+        <h1 className="text-2xl font-bold mb-6">Panel de Administrador - Productos</h1>
         <ProductList
           productos={productos}
           onEdit={handleEdit}
