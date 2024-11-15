@@ -22,6 +22,9 @@ const ProductList = ({ productos, onEdit, onDelete }) => {
               Sabores
             </th>
             <th className="px-6 py-3 border-b text-center text-sm font-bold text-gray-700 uppercase tracking-wider">
+              Imagen
+            </th>
+            <th className="px-6 py-3 border-b text-center text-sm font-bold text-gray-700 uppercase tracking-wider">
               Destacado
             </th>
             <th className="px-6 py-3 border-b text-center text-sm font-bold text-gray-700 uppercase tracking-wider">
@@ -46,6 +49,13 @@ const ProductList = ({ productos, onEdit, onDelete }) => {
               </td>
               <td className="px-6 py-4 border-b text-sm text-gray-800">
                 {producto.sabores.map((sabor) => sabor.sabor).join(", ")}
+              </td>
+              <td className="px-6 py-4 border-b text-sm text-gray-800">
+                <img
+                  src={producto?.imagen}
+                  alt={producto.nombre}
+                  className="w-16 h-16 object-cover rounded-md"
+                />
               </td>
               <td className="px-6 py-4 border-b text-center tex t-sm text-gray-800">
                 {producto.destacado ? "Sí" : "No"}

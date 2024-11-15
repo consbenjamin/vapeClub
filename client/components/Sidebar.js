@@ -27,8 +27,6 @@ const Sidebar = ({ isOpen, onClose, onAddProduct }) => {
       <div className="mt-4">
         <a href="#" className="block py-2 px-4 rounded hover:bg-gray-700">Inicio</a>
         <a href="#" className="block py-2 px-4 rounded hover:bg-gray-700">Productos</a>
-        <a href="#" className="block py-2 px-4 rounded hover:bg-gray-700">Categorías</a>
-        <a href="#" className="block py-2 px-4 rounded hover:bg-gray-700">Órdenes</a>
       </div>
     </div>
   );

@@ -47,13 +47,14 @@ router.post('/', async (req, res) => {
   }
 });
 
-router.post('/:id/imagen', upload.single('image'), async (req, res) => {
+router.post('/:id/imagen', upload.single('imagen'), async (req, res) => {
   try {
     const { id } = req.params;
     if (!req.file) {
       return res.status(400).json({ error: 'Se debe proporcionar una imagen.' });
     }
     const uploadResult = await cloudinary.uploader.upload(req.file.path);
+    console.log(req.file)
     const productoActualizado = await Producto.findByIdAndUpdate(
       id,
       { imagen: uploadResult.secure_url },
@@ -81,7 +82,7 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-router.put('/:id/image', upload.single('image'), async (req, res) => {
+router.put('/:id/imagen', upload.single('image'), async (req, res) => {
   try {
     const { id } = req.params;
     if (!req.file) {
