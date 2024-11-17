@@ -24,7 +24,9 @@ export default function AddProduct({ onAdd, onCancel }) {
     const formattedProduct = {
       ...product,
       precio: parseFloat(product.precio),
-      sabores: product.sabores.split(',').map((sabor) => sabor.trim()),
+      sabores: product.sabores.split(',').map((sabor) => ({
+        sabor: sabor.trim()
+      })),
     };
     onAdd(formattedProduct);
     setProduct({
