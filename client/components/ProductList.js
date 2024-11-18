@@ -1,4 +1,6 @@
 import React from "react";
+import Image from "next/image";
+import useStore from "../store/store";
 
 export default function ProductList ({ productos, onEdit, onDelete }) {
   
@@ -41,7 +43,12 @@ export default function ProductList ({ productos, onEdit, onDelete }) {
                 {producto.sabores.map((sabor) => sabor.sabor).join(", ")}
               </td>
               <td className="px-6 py-4 border-b text-sm text-gray-800">
-                <img src={producto?.imagen} alt={producto.nombre} className="w-16 h-16 object-cover rounded-md" />
+                <Image
+                  width={64}
+                  height={64}
+                  src={producto?.imagen} 
+                  alt={producto.nombre} 
+                  className="w-16 h-16 object-cover rounded-md" />
               </td>
               <td className="px-6 py-4 border-b text-center text-sm text-gray-800">
                 {producto.destacado ? "Sí" : "No"}

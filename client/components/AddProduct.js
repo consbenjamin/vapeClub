@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect  } from 'react';
+import toast, { Toaster } from 'react-hot-toast';
+import useStore from '../store/store';
 
 export default function AddProduct({ onAdd, onCancel }) {
   const [product, setProduct] = useState({
@@ -11,6 +13,15 @@ export default function AddProduct({ onAdd, onCancel }) {
     destacado: false,
   });
 
+  const { addProduct, productAdded } = useStore();
+
+  useEffect(() => {
+    if (productAdded) {
+      onCancel();
+      window.location.reload();
+    }
+  }, [productAdded, onCancel]);
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setProduct({
@@ -19,26 +30,41 @@ export default function AddProduct({ onAdd, onCancel }) {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setProduct((prev) => ({
+        ...prev,
+        imagen: file,
+      }));
+    }
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const formattedProduct = {
-      ...product,
+    const productoAEnviar = {
+      nombre: product.nombre,
+      descripcion: product.descripcion,
+      marca: product.marca,
       precio: parseFloat(product.precio),
       sabores: product.sabores.split(',').map((sabor) => ({
         sabor: sabor.trim()
       })),
+      destacado: product.destacado,
     };
-    onAdd(formattedProduct);
-    setProduct({
-      nombre: '',
-      descripcion: '',
-      precio: '',
-      marca: '',
-      sabores: '',
-      imagen: '',
-      destacado: false,
-    });
+
+    const imageFile = product.imagen;
+
+    try {
+      await addProduct(productoAEnviar, imageFile);
+      toast.success("Producto agregado exitosamente!");
+      onClose();
+    } catch (error) {
+      toast.error("Error al agregar el producto.");
+    }
   };
+
+  if (!onAdd) return null;
 
   return (
     <div className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-lg container">
@@ -105,12 +131,10 @@ export default function AddProduct({ onAdd, onCancel }) {
         <div>
           <label className="block text-gray-600 font-medium mb-1">Imagen (URL)</label>
           <input
-            type="text"
-            name="imagen"
-            value={product.imagen}
-            onChange={handleChange}
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-            placeholder="URL de la imagen"
           />
         </div>
         <div className="flex items-center">

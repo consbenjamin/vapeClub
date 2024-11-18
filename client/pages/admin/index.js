@@ -25,23 +25,6 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleAddProduct = async (newProduct) => {
-    try {
-      const response = await fetch("http://localhost:5000/api/productos", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newProduct),
-      });
-      if (!response.ok) {
-        throw new Error("Error al agregar el producto");
-      }
-      fetchProductos(); 
-      setIsAddProductOpen(false);
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
-
   return (
     <div className="flex h-screen">
       <button 
@@ -88,7 +71,7 @@ export default function AdminDashboard() {
       </div>
       {isAddProductOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <AddProduct onAdd={handleAddProduct} onCancel={() => setIsAddProductOpen(false)} />
+          <AddProduct onAdd={AddProduct} onCancel={() => setIsAddProductOpen(false)} />
         </div>
       )}
     </div>
