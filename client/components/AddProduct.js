@@ -1,5 +1,5 @@
 import React, { useState, useEffect  } from 'react';
-import toast, { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
 import useStore from '../store/store';
 
 export default function AddProduct({ onAdd, onCancel }) {
@@ -13,14 +13,15 @@ export default function AddProduct({ onAdd, onCancel }) {
     destacado: false,
   });
 
-  const { addProduct, productAdded } = useStore();
+  const { addProduct, productAdded, set } = useStore();
 
   useEffect(() => {
     if (productAdded) {
       onCancel();
       window.location.reload();
+      set({ productAdded: false });
     }
-  }, [productAdded, onCancel]);
+  }, [productAdded, onCancel, set]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -129,7 +130,7 @@ export default function AddProduct({ onAdd, onCancel }) {
           />
         </div>
         <div>
-          <label className="block text-gray-600 font-medium mb-1">Imagen (URL)</label>
+          <label className="block text-gray-600 font-medium mb-1">Imagen</label>
           <input
             type="file"
             accept="image/*"
