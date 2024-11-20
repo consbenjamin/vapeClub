@@ -15,6 +15,21 @@ export default function AdminDashboard() {
     fetchProducts();
   }, [fetchProducts]);
 
+  const handleDelete = async (id) => {
+    if (confirm("¿Estás seguro de que deseas eliminar este producto?")) {
+      try {
+        const response = await fetch(
+          `http://localhost:5000/api/productos/${id}`,
+          { method: "DELETE" }
+        );
+        if (!response.ok) throw new Error("Error al eliminar el producto");
+        fetchProducts();
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    }
+  };
+
   return (
     <div className="flex h-screen">
       <button
@@ -53,23 +68,7 @@ export default function AdminDashboard() {
           <ProductList
             productos={products}
             onEdit={(product) => setEditingProduct(product)}
-            onDelete={async (id) => {
-              if (
-                confirm("¿Estás seguro de que deseas eliminar este producto?")
-              ) {
-                try {
-                  const response = await fetch(
-                    `http://localhost:5000/api/productos/${id}`,
-                    { method: "DELETE" }
-                  );
-                  if (!response.ok)
-                    throw new Error("Error al eliminar el producto");
-                  fetchProducts();
-                } catch (error) {
-                  console.error("Error:", error);
-                }
-              }
-            }}
+            onDelete={handleDelete}
           />
         )}
       </div>
