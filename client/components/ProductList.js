@@ -17,8 +17,8 @@ export default function ProductList ({ productos, onEdit, onDelete }) {
   ];
 
   return (
-    <div className="overflow-x-auto">
-      <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
+    <div className="overflow-x-auto border bg-gray-200 rounded-md shadow-sm">
+      <table className="min-w-full bg-white">
         <thead>
           <tr>
             {columns.map((col) => (

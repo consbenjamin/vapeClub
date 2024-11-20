@@ -8,7 +8,7 @@ const Sidebar = ({ isOpen, onClose, onAddProduct }) => {
       } md:translate-x-0 md:static md:block`}
     >
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold">Panel de Control</h2>
+        <h2 className="text-2xl font-bold mb-2">Panel de Control</h2>
         
         <button className="md:hidden text-white" onClick={onClose}>
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
@@ -23,11 +23,6 @@ const Sidebar = ({ isOpen, onClose, onAddProduct }) => {
       >
         Agregar Producto
       </button>
-
-      <div className="mt-4">
-        <a href="#" className="block py-2 px-4 rounded hover:bg-gray-700">Inicio</a>
-        <a href="#" className="block py-2 px-4 rounded hover:bg-gray-700">Productos</a>
-      </div>
     </div>
   );
 };
