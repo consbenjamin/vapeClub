@@ -11,7 +11,12 @@ export default function EditProduct({ product = {}, onEdit, onCancel }) {
     const { name, value, type, checked } = e.target;
     setEditedProduct({
       ...editedProduct,
-      [name]: name === "sabores" ? value.split(",").map((s) => s.trim()) : type === "checkbox" ? checked : value,
+      [name]: 
+        name === "sabores" 
+        ? value.split(",").map((s) => s.trim())
+        : type === "checkbox" 
+        ? checked 
+        : value,
     });
   };
 
