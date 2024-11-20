@@ -6,6 +6,29 @@ const useStore = create((set) => ({
   product: null,
   loading: false,
   error: null,
+  productAdded: false,
+
+  fetchProducts: async () => {
+    set({ loading: true });
+    try {
+      const response = await fetch("http://localhost:5000/api/productos", {
+        method: 'GET',
+        // headers: {
+        //   'Authorization': getToken(),
+        // },
+      });
+      if (!response.ok) {
+        throw new Error('Error al cargar los productos');
+      }
+      const data = await response.json();
+      set({ products: data });
+    } catch (error) {
+      set({ error: error.message });
+      console.error('Error al cargar los productos:', error);
+    } finally {
+      set({ loading: false });
+    }
+  },
 
   addProduct: async (productoAEnviar, imagenFile) => {
     set({ loading: true });
