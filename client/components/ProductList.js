@@ -1,6 +1,5 @@
 import React from "react";
 import Image from "next/image";
-import useStore from "../store/store";
 
 export default function ProductList ({ productos, onEdit, onDelete }) {
   
