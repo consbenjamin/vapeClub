@@ -76,7 +76,7 @@ export default function AdminDashboard() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
           <AddProduct
             onAdd={(newProduct) => {
-              fetchProducts(); // Refetch después de añadir
+              fetchProducts();
               setIsAddProductOpen(false);
             }}
             onCancel={() => setIsAddProductOpen(false)}

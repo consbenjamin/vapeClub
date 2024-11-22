@@ -78,6 +78,46 @@ const useStore = create((set) => ({
     }
   },
 
+  editProduct: async (producto, newImage) => {
+    try {
+      // Actualizar el producto
+      const response = await fetch(
+        `http://localhost:5000/api/productos/${producto._id}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(producto),
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Error al actualizar el producto");
+      }
+      toast.success("Producto actualizado con éxito");
+
+      // Subir nueva imagen si existe
+      if (newImage) {
+        const formData = new FormData();
+        formData.append("image", newImage);
+
+        const imageResponse = await fetch(
+          `http://localhost:5000/api/productos/${producto._id}/imagen`,
+          {
+            method: "PUT",
+            body: formData,
+          }
+        );
+        if (!imageResponse.ok) {
+          throw new Error("Error al actualizar la imagen");
+        }
+        toast.success("Imagen actualizada con éxito");
+      }
+
+    } catch (error) {
+      toast.error(error.message || "Error al actualizar el producto");
+      console.error(error);
+    }
+  },
+
 }));
 
 export default useStore;

@@ -3,7 +3,7 @@ import useStore from "../store/store";
 import toast from "react-hot-toast";
 
 export default function EditProduct({ product = {}, onEdit, onCancel }) {
-  const { fetchProducts } = useStore();
+  const { editProduct, fetchProducts } = useStore();
   const [editedProduct, setEditedProduct] = useState(product);
   const [newImage, setNewImage] = useState(null);
 
@@ -24,44 +24,14 @@ export default function EditProduct({ product = {}, onEdit, onCancel }) {
     setNewImage(e.target.files[0]);
   };
 
-  const handleProductUpdate = async (producto) => {
-    const updatedProduct = {
-      ...producto,
-    };
-    const formData = new FormData();
-    Object.keys(updatedProduct).forEach((key) => {
-      if (key !== "image") {
-        formData.append(key, updatedProduct[key]);
-      }
-    });
-    const response = await fetch(`http://localhost:5000/api/productos/${producto._id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(updatedProduct),
-    });
-    if (response.ok) {
-      toast.success("Producto actualizado con éxito");
-      if (newImage) {
-        const imageFormData = new FormData();
-        imageFormData.append("image", newImage);
-        const imageResponse = await fetch(`http://localhost:5000/api/productos/${producto._id}/imagen`, {
-          method: "PUT",
-          body: imageFormData,
-        });
-        if (imageResponse.ok) {
-          toast.success("Imagen actualizada con éxito");
-        } else {
-          toast.error("Error al actualizar la imagen");
-          console.error("Error al actualizar la imagen");
-        }
-      }
-      fetchProducts();
-      onEdit();
-    } else {
+  const handleProductUpdate = async () => {
+    try {
+      await editProduct(editedProduct, newImage);
+      fetchProducts(); // Actualiza los productos tras la edición
+      onEdit(); // Llama a la función pasada como prop (puede ser para cerrar el modal o actualizar un estado padre)
+    } catch (error) {
       toast.error("Error al actualizar el producto");
-      console.error("Error al actualizar el producto");
+      console.error("Error al actualizar el producto:", error);
     }
   };
 
