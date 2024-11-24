@@ -88,7 +88,7 @@ export default function AdminDashboard() {
           <EditProduct
             product={editingProduct}
             onEdit={(updatedProduct) => {
-              fetchProducts(); // Refetch después de editar
+              fetchProducts();
               setEditingProduct(null);
             }}
             onCancel={() => setEditingProduct(null)}

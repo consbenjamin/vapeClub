@@ -27,8 +27,8 @@ export default function EditProduct({ product = {}, onEdit, onCancel }) {
   const handleProductUpdate = async () => {
     try {
       await editProduct(editedProduct, newImage);
-      fetchProducts(); // Actualiza los productos tras la edición
-      onEdit(); // Llama a la función pasada como prop (puede ser para cerrar el modal o actualizar un estado padre)
+      fetchProducts();
+      onEdit(); 
     } catch (error) {
       toast.error("Error al actualizar el producto");
       console.error("Error al actualizar el producto:", error);

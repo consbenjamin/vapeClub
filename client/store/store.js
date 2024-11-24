@@ -80,7 +80,6 @@ const useStore = create((set) => ({
 
   editProduct: async (producto, newImage) => {
     try {
-      // Actualizar el producto
       const response = await fetch(
         `http://localhost:5000/api/productos/${producto._id}`,
         {
@@ -94,7 +93,6 @@ const useStore = create((set) => ({
       }
       toast.success("Producto actualizado con éxito");
 
-      // Subir nueva imagen si existe
       if (newImage) {
         const formData = new FormData();
         formData.append("image", newImage);
