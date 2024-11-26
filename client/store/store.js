@@ -30,6 +30,22 @@ const useStore = create((set) => ({
     }
   },
 
+  fetchProductById: async (id) => {
+    set({ loading: true });
+    try {
+      const response = await fetch(`"http://localhost:5000/api/productos/${id}`);
+      if (!response.ok) {
+        throw new Error('Error al obtener el producto');
+      }
+      const data = await response.json();
+      set({ product: data });
+    } catch (error) {
+      set({ error: error.message });
+    } finally {
+      set({ loading: false });
+    }
+  },
+
   addProduct: async (productoAEnviar, imagenFile) => {
     set({ loading: true });
     try {
