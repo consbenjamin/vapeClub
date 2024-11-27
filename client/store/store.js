@@ -7,6 +7,7 @@ const useStore = create((set) => ({
   loading: false,
   error: null,
   productAdded: false,
+  cart: [],
 
   fetchProducts: async () => {
     set({ loading: true });
@@ -33,7 +34,7 @@ const useStore = create((set) => ({
   fetchProductById: async (id) => {
     set({ loading: true });
     try {
-      const response = await fetch(`"http://localhost:5000/api/productos/${id}`);
+      const response = await fetch(`http://localhost:5000/api/productos/${id}`);
       if (!response.ok) {
         throw new Error('Error al obtener el producto');
       }
@@ -131,6 +132,29 @@ const useStore = create((set) => ({
       console.error(error);
     }
   },
+
+  addToCart: (product) =>
+    set((state) => {
+      const existingProduct = state.cart.find((item) => item._id === product._id);
+      if (existingProduct) {
+        return {
+          cart: state.cart.map((item) =>
+            item._id === product._id
+              ? { ...item, quantity: item.quantity + 1 }
+              : item
+          ),
+        };
+      }
+      return { cart: [...state.cart, { ...product, quantity: 1 }] };
+    }),
+  removeFromCart: (productId) =>
+    set((state) => ({
+      cart: state.cart.filter((item) => item._id !== productId),
+    })),
+  clearCart: () =>
+    set(() => ({
+      cart: [],
+    })),
 
 }));
 

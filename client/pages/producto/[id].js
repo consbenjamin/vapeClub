@@ -31,6 +31,7 @@ export default function ProductDetailPage() {
       <Navbar />
       <ProductDetail
         key={product._id}
+        _id={product._id}
         imagen={product.imagen}
         nombre={product.nombre}
         precio={product.precio}

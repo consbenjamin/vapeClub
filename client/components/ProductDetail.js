@@ -1,7 +1,14 @@
 import React from 'react';
 import Image from 'next/image';
+import useStore from "@/store/store";
 
-export default function ProductDetail({ nombre, precio, descripcion, marca, imagen, sabores }) {
+export default function ProductDetail({ _id, nombre, precio, descripcion, marca, imagen, sabores }) {
+  const addToCart = useStore((state) => state.addToCart);
+
+  const handleAddToCart = () => {
+    addToCart({ _id, nombre, precio, descripcion, imagen });
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="grid md:grid-cols-2 gap-8 items-start">
@@ -39,7 +46,10 @@ export default function ProductDetail({ nombre, precio, descripcion, marca, imag
             </div>
           )}
           <div className="flex gap-4 mt-6">
-            <button className="flex-1 bg-gray-900 text-white py-3 px-6 rounded-md hover:bg-gray-800 transition-colors flex items-center justify-center gap-2">
+          <button
+              onClick={handleAddToCart}
+              className="flex-1 bg-gray-900 text-white py-3 px-6 rounded-md hover:bg-gray-800 transition-colors flex items-center justify-center gap-2"
+            >
               Agregar al carrito
             </button>
           </div>
