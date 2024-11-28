@@ -146,15 +146,19 @@ const useStore = create((set) => ({
         };
       }
       return { cart: [...state.cart, { ...product, quantity: 1 }] };
-    }),
+    }
+  ),
+
   removeFromCart: (productId) =>
     set((state) => ({
       cart: state.cart.filter((item) => item._id !== productId),
-    })),
+    })
+  ),
   clearCart: () =>
     set(() => ({
       cart: [],
-    })),
+    })
+  ),
 
 }));
 
