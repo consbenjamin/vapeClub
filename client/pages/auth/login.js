@@ -1,6 +1,7 @@
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { useRouter } from "next/router";
+import Image from "next/image";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -12,7 +13,7 @@ export default function LoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError("");  // Reset error state
+    setError("");  
 
     const result = await signIn("credentials", {
       email,
@@ -31,6 +32,10 @@ export default function LoginPage() {
       }
       router.push(result?.url || "/");
     }
+  };
+
+  const handleGoogleSignIn = async () => {
+    await signIn("google");
   };
 
   return (
@@ -73,20 +78,6 @@ export default function LoginPage() {
 
           {error && <div className="text-sm text-red-500 text-center">{error}</div>}
 
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <input
-                id="remember_me"
-                name="remember_me"
-                type="checkbox"
-                className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-              />
-              <label htmlFor="remember_me" className="ml-2 block text-sm text-gray-900">
-                Recordarme
-              </label>
-            </div>
-          </div>
-
           <div>
             <button
               type="submit"
@@ -97,6 +88,23 @@ export default function LoginPage() {
             </button>
           </div>
         </form>
+
+        <div className="mt-4">
+          <button
+            type="button"
+            onClick={handleGoogleSignIn}
+            className="w-full py-2 px-4 border border-gray-300 rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 flex items-center justify-center"
+          >
+            <Image 
+              src="/google-logo.png" 
+              alt="Google"
+              width={20}
+              height={20} 
+              className="mr-2" 
+            />
+            Iniciar sesión con Google
+          </button>
+        </div>
 
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-600">

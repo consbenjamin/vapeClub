@@ -1,8 +1,10 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
 
 export default NextAuth({
   providers: [
+    // Proveedor de credenciales personalizadas
     CredentialsProvider({
       name: "Credentials",
       credentials: {
@@ -15,19 +17,19 @@ export default NextAuth({
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-            },
+            },                    
             body: JSON.stringify({
               email: credentials.email,
               password: credentials.password,
             }),
           });
-      
+
           if (!res.ok) {
-            throw new Error('Error en la solicitud de autenticación');
+            throw new Error("Error en la solicitud de autenticación");
           }
-      
+
           const data = await res.json();
-      
+
           if (data.success) {
             return {
               id: data.user.id,
@@ -39,19 +41,31 @@ export default NextAuth({
             return null;
           }
         } catch (error) {
-          console.error('Error de autenticación:', error);
+          console.error("Error de autenticación:", error);
           return null;
         }
-      }
+      },
+    }),
+    // Proveedor de inicio de sesión con Google
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, account }) {
       if (user) {
-        token.id = user.id;
-        token.email = user.email;
-        token.name = user.name;
-        token.token = user.token;  // Guardar el token en el JWT
+        token.id = user.id || token.id;
+        token.email = user.email || token.email;
+        token.name = user.name || token.name;
+
+        if (account?.provider === "google") {
+          token.accessToken = account.access_token;
+        }
+
+        if (user.token) {
+          token.token = user.token;
+        }
       }
       return token;
     },
@@ -59,11 +73,12 @@ export default NextAuth({
       session.user.id = token.id;
       session.user.email = token.email;
       session.user.name = token.name;
-      session.user.token = token.token;  // Añadir token al session
+      session.user.token = token.token;
+      session.user.accessToken = token.accessToken;
       return session;
     },
   },
   pages: {
-    signIn: 'auth/login', // Página de login personalizada si es necesario
+    signIn: "/auth/login",
   },
 });
