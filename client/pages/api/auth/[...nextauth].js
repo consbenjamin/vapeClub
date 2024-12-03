@@ -4,7 +4,6 @@ import GoogleProvider from "next-auth/providers/google";
 
 export default NextAuth({
   providers: [
-    // Proveedor de credenciales personalizadas
     CredentialsProvider({
       name: "Credentials",
       credentials: {
