@@ -133,6 +133,33 @@ const useStore = create((set) => ({
     }
   },
 
+  registerUser: async (userData) => {
+    set({ loading: true });
+    try {
+      const response = await fetch("http://localhost:5000/api/user/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Error al registrar el usuario");
+      }
+
+      const data = await response.json();
+      toast.success(data.message || "Usuario registrado exitosamente");
+    } catch (error) {
+      set({ error: error.message });
+      console.error("Error al registrar el usuario:", error);
+      toast.error(error.message || "Error al registrar el usuario");
+    } finally {
+      set({ loading: false });
+    }
+  },
+
   addToCart: (product) =>
     set((state) => {
       const existingProduct = state.cart.find((item) => item._id === product._id);
@@ -140,12 +167,12 @@ const useStore = create((set) => ({
         return {
           cart: state.cart.map((item) =>
             item._id === product._id
-              ? { ...item, quantity: item.quantity + 1 }
+              ? { ...item, quantity: item.quantity + (product.quantity || 1) }
               : item
           ),
         };
       }
-      return { cart: [...state.cart, { ...product, quantity: 1 }] };
+      return { cart: [...state.cart, { ...product, quantity: product.quantity || 1 }] };
     }
   ),
 

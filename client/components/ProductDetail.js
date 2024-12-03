@@ -1,13 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import useStore from "@/store/store";
 
 export default function ProductDetail({ _id, nombre, precio, descripcion, marca, imagen, sabores }) {
   const addToCart = useStore((state) => state.addToCart);
 
+  const [quantity, setQuantity] = useState(1);
+
   const handleAddToCart = () => {
-    addToCart({ _id, nombre, precio, descripcion, imagen });
+    addToCart({ _id, nombre, precio, descripcion, imagen, quantity });
   };
+
+  const incrementQuantity = () => setQuantity((prev) => prev + 1);
+  const decrementQuantity = () => setQuantity((prev) => Math.max(prev - 1, 1));
+
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -45,8 +51,23 @@ export default function ProductDetail({ _id, nombre, precio, descripcion, marca,
               </div>
             </div>
           )}
-          <div className="flex gap-4 mt-6">
-          <button
+          <div className="flex items-center gap-4 mt-6">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={decrementQuantity}
+                className="px-4 py-2 bg-gray-200 text-gray-900 rounded-md hover:bg-gray-300 transition"
+              >
+                -
+              </button>
+              <span className="text-lg font-bold">{quantity}</span>
+              <button
+                onClick={incrementQuantity}
+                className="px-4 py-2 bg-gray-200 text-gray-900 rounded-md hover:bg-gray-300 transition"
+              >
+                +
+              </button>
+            </div>
+            <button
               onClick={handleAddToCart}
               className="flex-1 bg-gray-900 text-white py-3 px-6 rounded-md hover:bg-gray-800 transition-colors flex items-center justify-center gap-2"
             >

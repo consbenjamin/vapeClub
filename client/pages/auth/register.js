@@ -1,13 +1,15 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
+import useStore from "@/store/store";
 
 export default function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+
+  const { registerUser, loading, error } = useStore();
+
   const router = useRouter();
 
   const handleSubmit = async (e) => {
@@ -19,32 +21,12 @@ export default function Register() {
       return;
     }
 
-    setLoading(true);
+    const success = await registerUser(name, email, password);
 
-    try {
-      const res = await fetch("http://localhost:5000/api/user/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name,
-          email,
-          password,
-        }),
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        router.push("/auth/login");
-      } else {
-        setError(data.message || "Error al registrar el usuario");
-      }
-    } catch (error) {
-      setError("Error en el servidor. Por favor, inténtalo nuevamente más tarde.");
-    } finally {
-      setLoading(false);
+    if (success) {
+      router.push("/auth/login");
+    } else if (storeError) {
+      setError(storeError);
     }
   };
 
