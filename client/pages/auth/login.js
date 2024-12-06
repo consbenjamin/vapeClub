@@ -13,7 +13,7 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError("");  
+    setError("");
 
     const result = await signIn("credentials", {
       email,
@@ -26,11 +26,7 @@ export default function Login() {
     if (result?.error) {
       setError("Credenciales incorrectas o error en el servidor");
     } else {
-      if (result?.token) {
-        // Guardar token en localStorage (considera alternativas más seguras)
-        localStorage.setItem("auth_token", result.token);
-      }
-      router.push(result?.url || "/");
+      router.push("/");
     }
   };
 

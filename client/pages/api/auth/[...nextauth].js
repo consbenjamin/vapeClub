@@ -45,7 +45,6 @@ export default NextAuth({
         }
       },
     }),
-    // Proveedor de inicio de sesión con Google
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
@@ -75,6 +74,9 @@ export default NextAuth({
       session.user.token = token.token;
       session.user.accessToken = token.accessToken;
       return session;
+    },
+    async redirect({ url, baseUrl }) {
+      return baseUrl;
     },
   },
   pages: {
