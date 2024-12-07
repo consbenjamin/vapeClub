@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
 
 export default function Carousel() {
-  const [products, setProducts] = useState([]) 
+  const [products, setProducts] = useState([])
   const [currentIndex, setCurrentIndex] = useState(0)
 
   useEffect(() => {
@@ -31,7 +31,7 @@ export default function Carousel() {
   }
 
   return (
-    <div className="relative w-full mx-auto py-4">
+    <div className="relative w-full mx-auto py-8 bg-gray-50">
       {products.length > 0 ? (
         <>
           <div className="overflow-hidden">
@@ -42,19 +42,19 @@ export default function Carousel() {
               }}
             >
               {products.map((product) => (
-                <div key={product._id} className="w-1/6 flex-shrink-0 px-2 py-3">
-                  <div className="p-3 bg-white rounded-lg shadow-lg hover:shadow-2xl transition-all duration-300">
+                <div key={product._id} className="w-1/3 flex-shrink-0 px-4">
+                  <div className="p-4 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
                     <Image
                       src={product.imagen}
                       alt={product.nombre}
-                      width={120}
-                      height={120}
+                      width={180}
+                      height={180}
                       quality={90}
                       layout="responsive"
-                      className="w-full h-auto mb-2 rounded-md object-cover"
+                      className="w-full h-auto mb-4 rounded-md object-cover"
                     />
-                    <h3 className="text-sm font-medium text-gray-800 truncate">{product.nombre}</h3>
-                    <p className="text-xs text-gray-600">${product.precio.toFixed(2)}</p>
+                    <h3 className="text-base font-semibold text-gray-800 truncate">{product.nombre}</h3>
+                    <p className="text-sm font-medium text-gray-600 mt-2">${product.precio.toFixed(2)}</p>
                   </div>
                 </div>
               ))}
@@ -63,18 +63,18 @@ export default function Carousel() {
 
           <button
             onClick={prevSlide}
-            className="absolute top-1/2 left-2 transform -translate-y-1/2 bg-white/50 p-1.5 rounded-full shadow-md hover:bg-white/80 transition-colors z-10"
+            className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-gray-800/70 p-2 rounded-full hover:bg-gray-800 transition-colors z-10"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-4 h-4 text-gray-800">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-5 h-5 text-white">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
 
           <button
             onClick={nextSlide}
-            className="absolute top-1/2 right-2 transform -translate-y-1/2 bg-white/50 p-1.5 rounded-full shadow-md hover:bg-white/80 transition-colores z-10"
+            className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-gray-800/70 p-2 rounded-full hover:bg-gray-800 transition-colors z-10"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-4 h-4 text-gray-800">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-5 h-5 text-white">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </button>
