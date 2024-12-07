@@ -77,7 +77,7 @@ export default function Navbar() {
                   <button className="flex items-center gap-2">
                     <span>{session.user.name}</span>
                   </button>
-                  <div className="absolute right-0 mt-2 hidden w-48 bg-white text-gray-800 rounded shadow group-hover:block">
+                  <div className="absolute right-0 hidden w-48 bg-white text-gray-800 rounded shadow group-hover:block">
                     <Link
                       href="/perfil"
                       className="block px-4 py-2 hover:bg-gray-100"
@@ -140,7 +140,6 @@ export default function Navbar() {
                   </Link>
                 ))}
 
-                {/* Opciones de autenticación */}
                 {session ? (
                   <>
                     <Link
