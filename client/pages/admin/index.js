@@ -4,6 +4,7 @@ import Sidebar from "@/components/Sidebar";
 import AddProduct from "@/components/AddProduct";
 import EditProduct from "@/components/EditProduct";
 import useStore from "@/store/store";
+import { getSession } from "next-auth/react";
 
 export default function AdminDashboard() {
   const { products, fetchProducts, loading, error } = useStore();
@@ -97,4 +98,22 @@ export default function AdminDashboard() {
       )}
     </div>
   );
+}
+
+// Proteger la ruta del lado del servidor
+export async function getServerSideProps(context) {
+  const session = await getSession(context);
+
+  if (!session || session.user.role !== "admin") {
+    return {
+      redirect: {
+        destination: "auth/login",
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: {},
+  };
 }

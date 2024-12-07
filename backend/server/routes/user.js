@@ -81,7 +81,6 @@ router.post('/login', async (req, res) => {
       throw new Error("JWT_SECRET no está definido en el entorno");
     }
 
-    // Buscar al usuario por su email
     const user = await User.findOne({ email }).select("+password");
     if (!user) {
       console.log("Usuario no encontrado");
@@ -104,7 +103,12 @@ router.post('/login', async (req, res) => {
     res.status(200).json({
       success: true,
       token,
-      user: { id: user._id, email: user.email, name: user.name },
+      user: { 
+        id: user._id, 
+        email: user.email, 
+        name: user.name,
+        role: user.role, 
+      },
     });
   } catch (err) {
     console.error(err);
@@ -114,10 +118,10 @@ router.post('/login', async (req, res) => {
 
 router.get("/users", async (req, res) => {
   try {
-    // // Solo un admin puede ver todos los usuarios
-    // if (req.user.role !== 'admin') {
-    //   return res.status(403).json({ error: "Acceso denegado" });
-    // }
+    // Solo un admin puede ver todos los usuarios
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ error: "Acceso denegado" });
+    }
 
     const users = await User.find().select("-password"); // Excluimos las contraseñas
     res.json(users);

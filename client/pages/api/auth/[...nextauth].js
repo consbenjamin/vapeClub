@@ -34,6 +34,7 @@ export default NextAuth({
               id: data.user.id,
               email: data.user.email,
               name: data.user.name,
+              role: data.user.role,
               token: data.token,
             };
           } else {
@@ -56,6 +57,7 @@ export default NextAuth({
         token.id = user.id || token.id;
         token.email = user.email || token.email;
         token.name = user.name || token.name;
+        token.role = user.role || token.role;
 
         if (account?.provider === "google") {
           token.accessToken = account.access_token;
@@ -71,6 +73,7 @@ export default NextAuth({
       session.user.id = token.id;
       session.user.email = token.email;
       session.user.name = token.name;
+      session.user.role = token.role;
       session.user.token = token.token;
       session.user.accessToken = token.accessToken;
       return session;
