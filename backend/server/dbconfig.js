@@ -5,6 +5,7 @@ require("dotenv").config();
 
 const productosRoutes = require('./routes/productos');
 const userRoutes = require('./routes/user');
+const paymentRoutes = require('./routes/payment');
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -19,6 +20,7 @@ app.use(cors({
 
 app.use("/api/productos", productosRoutes);
 app.use("/api/user", userRoutes);
+app.use('/api/payment', paymentRoutes);
 
 
 mongoose.connect(process.env.MONGODB_URI)
