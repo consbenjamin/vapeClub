@@ -47,7 +47,7 @@ router.post('/create_preference', async (req, res) => {
           failure: `${process.env.FRONTEND_URL}/failure`,
           pending: `${process.env.FRONTEND_URL}/pending`
         },
-        auto_return: 'approved',
+        // auto_return: 'approved',
         external_reference: `cart_${Date.now()}`,
         // notification_url: `${process.env.BACKEND_URL}/webhook/mercadopago`
       }
@@ -66,5 +66,7 @@ router.post('/create_preference', async (req, res) => {
     });
   }
 });
+
+
 
 module.exports = router;
