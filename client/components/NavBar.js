@@ -15,10 +15,7 @@ export default function Navbar() {
   const cartItemCount = cart.reduce((total, item) => total + item.quantity, 0);
 
   const navItems = [
-    { name: "Inicio", href: "/" },
-    { name: "Productos", href: "/productos" },
-    { name: "Sobre Nosotros", href: "/sobre-nosotros" },
-    { name: "Contacto", href: "/contacto" },
+    // { name: "Inicio", href: "/" },
   ];
 
   return (
