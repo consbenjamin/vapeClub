@@ -26,8 +26,8 @@ export default function Register() {
 
     if (success) {
       router.push("/auth/login");
-    } else if (storeError) {
-      setError(storeError);
+    } else if (setError) {
+      setError(setError);
     }
   };
 
