@@ -8,14 +8,12 @@ export default function Register() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const { registerUser, loading, error } = useStore();
-  const { setError } = useStore();
-
+  const { registerUser, loading, error, setError } = useStore();
   const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
+    setError(""); 
 
     if (password !== confirmPassword) {
       setError("Las contraseñas no coinciden");
@@ -26,8 +24,8 @@ export default function Register() {
 
     if (success) {
       router.push("/auth/login");
-    } else if (setError) {
-      setError(setError);
+    } else if (error) {
+      setError(error);
     }
   };
 
@@ -40,9 +38,7 @@ export default function Register() {
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
-              <label htmlFor="name" className="sr-only">
-                Nombre
-              </label>
+              <label htmlFor="name" className="sr-only">Nombre</label>
               <input
                 id="name"
                 name="name"
@@ -55,9 +51,7 @@ export default function Register() {
               />
             </div>
             <div className="mt-4">
-              <label htmlFor="email" className="sr-only">
-                Email
-              </label>
+              <label htmlFor="email" className="sr-only">Email</label>
               <input
                 id="email"
                 name="email"
@@ -70,9 +64,7 @@ export default function Register() {
               />
             </div>
             <div className="mt-4">
-              <label htmlFor="password" className="sr-only">
-                Contraseña
-              </label>
+              <label htmlFor="password" className="sr-only">Contraseña</label>
               <input
                 id="password"
                 name="password"
@@ -85,9 +77,7 @@ export default function Register() {
               />
             </div>
             <div className="mt-4">
-              <label htmlFor="confirmPassword" className="sr-only">
-                Confirmar Contraseña
-              </label>
+              <label htmlFor="confirmPassword" className="sr-only">Confirmar Contraseña</label>
               <input
                 id="confirmPassword"
                 name="confirmPassword"
