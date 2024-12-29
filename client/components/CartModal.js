@@ -10,6 +10,8 @@ export default function CartModal({ onClose }) {
   const clearCart = useStore((state) => state.clearCart);
   const [isLoading, setIsLoading] = useState(false);
 
+  const URL = process.env.NEXT_PUBLIC_URL;
+
   const handleCheckout = async () => {
     if (cart.length === 0) {
       toast.error("El carrito está vacío");
@@ -18,7 +20,7 @@ export default function CartModal({ onClose }) {
 
     try {
       setIsLoading(true);
-      const response = await fetch('http://localhost:5000/api/payment/create_preference', {
+      const response = await fetch(`${URL}/api/payment/create_preference`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

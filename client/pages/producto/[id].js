@@ -8,9 +8,11 @@ export default function ProductDetailPage() {
   const { id } = router.query;
   const [product, setProduct] = useState(null);
 
+  const URL = process.env.NEXT_PUBLIC_URL;  
+
   useEffect(() => {
     if (id) {
-      fetch(`http://localhost:5000/api/productos/${id}`)
+      fetch(`${URL}/api/productos/${id}`)
         .then((res) => res.json())
         .then((data) => setProduct(data))
         .catch((err) => console.error('Error fetching product:', err));

@@ -11,6 +11,7 @@ export default function AdminDashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isAddProductOpen, setIsAddProductOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
+  const URL = process.env.NEXT_PUBLIC_URL; 
 
   useEffect(() => {
     fetchProducts();
@@ -20,7 +21,7 @@ export default function AdminDashboard() {
     if (confirm("¿Estás seguro de que deseas eliminar este producto?")) {
       try {
         const response = await fetch(
-          `http://localhost:5000/api/productos/${id}`,
+          `${URL}/api/productos/${id}`,
           { method: "DELETE" }
         );
         if (!response.ok) throw new Error("Error al eliminar el producto");
