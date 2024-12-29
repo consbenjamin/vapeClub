@@ -162,11 +162,11 @@ const useStore = create((set) => ({
 
   addToCart: (product) =>
     set((state) => {
-      const existingProduct = state.cart.find((item) => item._id === product._id);
+      const existingProduct = state.cart.find((item) => item._id === product._id && item.sabor === product.sabor);
       if (existingProduct) {
         return {
           cart: state.cart.map((item) =>
-            item._id === product._id
+            item._id === product._id && item.sabor === product.sabor
               ? { ...item, quantity: item.quantity + (product.quantity || 1) }
               : item
           ),
@@ -176,9 +176,9 @@ const useStore = create((set) => ({
     }
   ),
 
-  removeFromCart: (productId) =>
+  removeFromCart: (productId, sabor) =>
     set((state) => ({
-      cart: state.cart.filter((item) => item._id !== productId),
+      cart: state.cart.filter((item) => !(item._id === productId && item.sabor === sabor)),
     })
   ),
   clearCart: () =>

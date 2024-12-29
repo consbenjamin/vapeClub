@@ -6,9 +6,12 @@ export default function ProductDetail({ _id, nombre, precio, descripcion, marca,
   const addToCart = useStore((state) => state.addToCart);
 
   const [quantity, setQuantity] = useState(1);
+  const [selectedSabor, setSelectedSabor] = useState(sabores?.[0]?.sabor || "");
 
   const handleAddToCart = () => {
-    addToCart({ _id, nombre, precio, descripcion, imagen, quantity });
+    addToCart({ _id, nombre, precio, descripcion, imagen, quantity, sabor: selectedSabor });
+
+    setQuantity(1);
   };
 
   const incrementQuantity = () => setQuantity((prev) => prev + 1);
@@ -41,12 +44,17 @@ export default function ProductDetail({ _id, nombre, precio, descripcion, marca,
               <h3 className="text-sm font-medium text-gray-900">Sabores</h3>
               <div className="flex gap-2 mt-2">
                 {sabores.map(({ sabor, _id }) => (
-                  <span
+                  <button
                     key={_id}
-                    className="px-4 py-2 border rounded-full text-sm text-gray-700 bg-gray-100"
+                    onClick={() => setSelectedSabor(sabor)}
+                    className={`px-4 py-2 border rounded-full text-sm ${
+                      selectedSabor === sabor
+                        ? "bg-gray-900 text-white"
+                        : "text-gray-700 bg-gray-100"
+                    }`}
                   >
                     {sabor}
-                  </span>
+                  </button>
                 ))}
               </div>
             </div>

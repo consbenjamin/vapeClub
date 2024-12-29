@@ -4,6 +4,7 @@ import { useState } from "react";
 import { toast } from "react-hot-toast";
 
 export default function CartModal({ onClose }) {
+  
   const cart = useStore((state) => state.cart);
   const removeFromCart = useStore((state) => state.removeFromCart);
   const clearCart = useStore((state) => state.clearCart);
@@ -62,12 +63,17 @@ export default function CartModal({ onClose }) {
                 />
                 <div className="flex-1">
                   <h3 className="text-sm font-bold text-gray-800 dark:text-gray-100">{item.nombre}</h3>
+                  {item.sabor && (
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      Sabor: {item.sabor}
+                    </p>
+                  )}
                   <p className="text-sm text-gray-600 dark:text-gray-400">
                     ${item.precio} x {item.quantity}
                   </p>
                 </div>
                 <button
-                  onClick={() => removeFromCart(item._id)}
+                  onClick={() => removeFromCart(item._id, item.sabor)}
                   className="text-red-500 hover:text-red-600 transition font-bold"
                 >
                   Quitar
