@@ -9,6 +9,7 @@ export default function Register() {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const { registerUser, loading, error } = useStore();
+  const { setError } = useStore();
 
   const router = useRouter();
 

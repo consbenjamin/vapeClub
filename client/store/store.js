@@ -11,6 +11,10 @@ const useStore = create((set) => ({
   productAdded: false,
   cart: [],
 
+  setError: (errorMessage) => set({ error: errorMessage }),
+
+  setLoading: (isLoading) => set({ loading: isLoading }),
+
   fetchProducts: async () => {
     set({ loading: true });
     try {
