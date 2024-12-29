@@ -1,6 +1,8 @@
 import { toast } from 'react-hot-toast';
 import { create } from 'zustand';
 
+const URL = process.env.NEXT_PUBLIC_URL;
+
 const useStore = create((set) => ({
   products: [],
   product: null,
@@ -12,7 +14,7 @@ const useStore = create((set) => ({
   fetchProducts: async () => {
     set({ loading: true });
     try {
-      const response = await fetch("http://localhost:5000/api/productos", {
+      const response = await fetch(`${URL}/api/productos`, {
         method: 'GET',
         // headers: {
         //   'Authorization': getToken(),
@@ -34,7 +36,7 @@ const useStore = create((set) => ({
   fetchProductById: async (id) => {
     set({ loading: true });
     try {
-      const response = await fetch(`http://localhost:5000/api/productos/${id}`);
+      const response = await fetch(`${URL}/api/productos/${id}`);
       if (!response.ok) {
         throw new Error('Error al obtener el producto');
       }
@@ -50,7 +52,7 @@ const useStore = create((set) => ({
   addProduct: async (productoAEnviar, imagenFile) => {
     set({ loading: true });
     try {
-      const response = await fetch("http://localhost:5000/api/productos", {
+      const response = await fetch(`${URL}/api/productos`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -68,7 +70,7 @@ const useStore = create((set) => ({
       if (imagenFile) {
         const formData = new FormData();
         formData.append('imagen', imagenFile);
-        const imagenResponse = await fetch(`http://localhost:5000/api/productos/${nuevoProducto._id}/imagen`, {
+        const imagenResponse = await fetch(`${URL}/api/productos/${nuevoProducto._id}/imagen`, {
           method: 'POST',
           // headers: {
           //   'Authorization': getToken(),
@@ -98,7 +100,7 @@ const useStore = create((set) => ({
   editProduct: async (producto, newImage) => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/productos/${producto._id}`,
+        `${URL}/api/productos/${producto._id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -115,7 +117,7 @@ const useStore = create((set) => ({
         formData.append("image", newImage);
 
         const imageResponse = await fetch(
-          `http://localhost:5000/api/productos/${producto._id}/imagen`,
+          `${URL}/api/productos/${producto._id}/imagen`,
           {
             method: "PUT",
             body: formData,
@@ -136,7 +138,7 @@ const useStore = create((set) => ({
   registerUser: async (userData) => {
     set({ loading: true });
     try {
-      const response = await fetch("http://localhost:5000/api/user/register", {
+      const response = await fetch(`${URL}/api/user/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
