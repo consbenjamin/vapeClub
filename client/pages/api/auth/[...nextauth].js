@@ -31,7 +31,7 @@ export default NextAuth({
 
           const data = await res.json();
 
-          if (data.success) {
+          if (data.success && data.token) {
             return {
               id: data.user.id,
               email: data.user.email,
@@ -40,6 +40,7 @@ export default NextAuth({
               token: data.token,
             };
           } else {
+            console.error("Error en el login:", data.error || "Sin éxito");
             return null;
           }
         } catch (error) {
@@ -81,7 +82,7 @@ export default NextAuth({
       return session;
     },
     async redirect({ url, baseUrl }) {
-      return baseUrl;
+      return url.startsWith(baseUrl) ? url : baseUrl;
     },
   },
   pages: {
