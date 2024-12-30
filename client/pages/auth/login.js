@@ -15,10 +15,15 @@ export default function Login() {
     setLoading(true);
     setError("");
 
+    if (!email || !password) {
+      setError("Por favor ingresa tu correo y contraseña.");
+      setLoading(false);
+      return;
+    }
+
     const result = await signIn("credentials", {
       email,
-      password,
-      redirect: false,
+      password
     });
 
     setLoading(false);

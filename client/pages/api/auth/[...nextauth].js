@@ -13,6 +13,10 @@ export default NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
+        if (!credentials.email || !credentials.password) {
+          throw new Error("Por favor ingresa tu correo y contraseña.");
+        }
+
         try {
           const res = await fetch(`${URL}/api/user/login`, {
             method: "POST",
@@ -26,7 +30,8 @@ export default NextAuth({
           });
 
           if (!res.ok) {
-            throw new Error("Error en la solicitud de autenticación");
+            const errorData = await res.json();
+            throw new Error(errorData.message || "Credenciales inválidas.");
           }
 
           const data = await res.json();
@@ -40,12 +45,11 @@ export default NextAuth({
               token: data.token,
             };
           } else {
-            console.error("Error en el login:", data.error || "Sin éxito");
-            return null;
+            throw new Error(data.error || "Error inesperado en la autenticación.");
           }
         } catch (error) {
-          console.error("Error de autenticación:", error);
-          return null;
+          console.error("Error de autenticación:", error.message || error);
+          throw new Error("Error en el servidor. Intenta nuevamente.");
         }
       },
     }),
