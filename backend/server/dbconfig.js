@@ -16,6 +16,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors({
   origin: 'https://vape-club-20.vercel.app',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
 }));
 
 app.use("/api/productos", productosRoutes);
