@@ -142,6 +142,7 @@ const useStore = create((set) => ({
   registerUser: async (userData) => {
     set({ loading: true });
     try {
+      console.log("Datos que se enviarán al backend:", userData)
       const response = await fetch(`${URL}/api/user/register`, {
         method: "POST",
         headers: {
