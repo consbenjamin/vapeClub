@@ -1,5 +1,4 @@
 // pages/admin/index.js
-
 import { useEffect, useState } from "react";
 import ProductList from "@/components/ProductList";
 import Sidebar from "@/components/Sidebar";
@@ -16,16 +15,17 @@ export default function AdminDashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isAddProductOpen, setIsAddProductOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
-  const URL = process.env.NEXT_PUBLIC_URL; 
+  const URL = process.env.NEXT_PUBLIC_URL;
 
+  // useEffect para manejar la redirección de acceso
   useEffect(() => {
-    if (status === "loading") return; // Esperar a que la sesión esté cargada
+    if (status === "loading") return; // Si la sesión está cargando no hacemos nada aún
 
-    // Verificar si el rol del usuario no es 'admin'
+    // Si no hay sesión o el rol no es admin, redirigimos al login
     if (!session || session.user.role !== "admin") {
-      router.push("/auth/login"); // Redirigir al login si no es admin
+      router.push("/auth/login");
     } else {
-      fetchProducts(); // Solo ejecutar la carga de productos si es admin
+      fetchProducts(); // Si es admin, cargamos los productos
     }
   }, [status, session, router]);
 
@@ -111,25 +111,4 @@ export default function AdminDashboard() {
       )}
     </div>
   );
-}
-
-// Proteger la ruta del lado del servidor
-import { getSession } from "next-auth/react";
-
-export async function getServerSideProps(context) {
-  const session = await getSession(context);
-
-  // Verificar si la sesión existe y si el rol es 'admin'
-  if (!session || session.user.role !== "admin") {
-    return {
-      redirect: {
-        destination: "/auth/login", // Redirigir al login si no es admin
-        permanent: false,           // Redirección temporal
-      },
-    };
-  }
-
-  return {
-    props: {}, // Pasar las props si el usuario tiene el rol adecuado
-  };
 }
