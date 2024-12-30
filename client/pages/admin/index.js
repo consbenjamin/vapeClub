@@ -5,8 +5,11 @@ import AddProduct from "@/components/AddProduct";
 import EditProduct from "@/components/EditProduct";
 import useStore from "@/store/store";
 import { getSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 
 export default function AdminDashboard() {
+  const { data: session, status } = useSession();
+  console.log(session);
   const { products, fetchProducts, loading, error } = useStore();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isAddProductOpen, setIsAddProductOpen] = useState(false);
