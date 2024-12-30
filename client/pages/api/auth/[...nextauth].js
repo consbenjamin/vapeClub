@@ -36,8 +36,6 @@ export default NextAuth({
 
           const data = await res.json();
 
-          console.log("Authorize callback - response:", data); // Log de la respuesta del backend
-
           if (data.success && data.token) {
             return {
               id: data.user.id,
@@ -68,8 +66,6 @@ export default NextAuth({
         token.name = user.name || token.name;
         token.role = user.role || token.role;
 
-        console.log("JWT callback - user:", user); // Log de la información del user
-
         if (account?.provider === "google") {
           token.accessToken = account.access_token;
         }
@@ -78,7 +74,6 @@ export default NextAuth({
           token.token = user.token;
         }
       }
-      console.log("JWT callback - token:", token); // Log del token que se está retornando
       return token;
     },
     async session({ session, token }) {
@@ -88,13 +83,9 @@ export default NextAuth({
       session.user.role = token.role;
       session.user.token = token.token;
       session.user.accessToken = token.accessToken;
-
-      console.log("Session callback - session:", session); // Log de la sesión
-      console.log("Session callback - token:", token); // Log del token en la sesión
       return session;
     },
     async redirect({ url, baseUrl }) {
-      console.log("Redirect callback - url:", url); // Log de la url de redirección
       return url.startsWith(baseUrl) ? url : baseUrl;
     },
   },

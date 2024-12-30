@@ -4,12 +4,13 @@ import Sidebar from "@/components/Sidebar";
 import AddProduct from "@/components/AddProduct";
 import EditProduct from "@/components/EditProduct";
 import useStore from "@/store/store";
-import { getSession } from "next-auth/react";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
+import { getSession } from "next-auth/react";
 
 export default function AdminDashboard() {
   const { data: session, status } = useSession();
-  console.log(session);
+  const router = useRouter();
   const { products, fetchProducts, loading, error } = useStore();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isAddProductOpen, setIsAddProductOpen] = useState(false);
@@ -17,8 +18,14 @@ export default function AdminDashboard() {
   const URL = process.env.NEXT_PUBLIC_URL; 
 
   useEffect(() => {
-    fetchProducts();
-  }, [fetchProducts]);
+    if (status === "loading") return;
+
+    if (!session || session.user.role !== "admin") {
+      router.push("/auth/login");
+    } else {
+      fetchProducts();
+    }
+  }, [status, session, router]);
 
   const handleDelete = async (id) => {
     if (confirm("¿Estás seguro de que deseas eliminar este producto?")) {
@@ -107,6 +114,7 @@ export default function AdminDashboard() {
 // Proteger la ruta del lado del servidor
 export async function getServerSideProps(context) {
   const session = await getSession(context);
+  console.log("Session en el servidor:", session);
 
   if (!session || session.user.role !== "admin") {
     return {
