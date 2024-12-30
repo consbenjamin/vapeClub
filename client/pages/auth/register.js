@@ -29,7 +29,7 @@ export default function Register() {
     const success = await registerUser(userData);
 
     if (success) {
-      router.push("/auth/login");
+      router.push("/");
     } else if (error) {
       setError(error);
     }

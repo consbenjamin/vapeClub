@@ -17,15 +17,13 @@ export default function AdminDashboard() {
   const [editingProduct, setEditingProduct] = useState(null);
   const URL = process.env.NEXT_PUBLIC_URL;
 
-  // useEffect para manejar la redirección de acceso
   useEffect(() => {
-    if (status === "loading") return; // Si la sesión está cargando no hacemos nada aún
+    if (status === "loading") return; 
 
-    // Si no hay sesión o el rol no es admin, redirigimos al login
     if (!session || session.user.role !== "admin") {
       router.push("/auth/login");
     } else {
-      fetchProducts(); // Si es admin, cargamos los productos
+      fetchProducts();
     }
   }, [status, session, router]);
 

@@ -83,13 +83,16 @@ export default NextAuth({
       session.user.role = token.role;
       session.user.token = token.token;
       session.user.accessToken = token.accessToken;
-      return session;
+      return session; 
     },
     async redirect({ url, baseUrl }) {
-      return url.startsWith(baseUrl) ? url : baseUrl;
+      if (url === baseUrl) {
+        return "/";
+      }
+      return url;
+    }
+  },
+    pages: {
+      signIn: "/auth/login",
     },
-  },
-  pages: {
-    signIn: "/auth/login",
-  },
 });
