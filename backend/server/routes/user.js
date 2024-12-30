@@ -42,6 +42,8 @@ router.put("/profile", authenticateToken, async (req, res) => {
 router.post("/register", async (req, res) => {
   const { name, email, password, provider = "credentials" } = req.body;
 
+  console.log('Datos recibidos en el backend:', req.body);
+
   if (!name || !email || !password) {
     return res.status(400).json({ error: "Todos los campos son obligatorios" });
   }

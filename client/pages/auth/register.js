@@ -20,7 +20,13 @@ export default function Register() {
       return;
     }
 
-    const success = await registerUser(name, email, password);
+    const userData = {
+      name: name,
+      email: email,
+      password: password,
+    };
+
+    const success = await registerUser(userData);
 
     if (success) {
       router.push("/auth/login");
