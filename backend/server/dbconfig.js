@@ -14,7 +14,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(cors({
-  origin: ['https://vape-club-20.vercel.app', 'https://vape-club-20.vercel.app/auth/register', 'https://vape-club-20.vercel.app/auth/login'],
+  origin: ['https://vapeclub.vercel.app', 'https://vapeclub.vercel.app/auth/register', 'https://vapeclub.vercel.app/auth/login'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
