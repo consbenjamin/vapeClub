@@ -1,87 +1,142 @@
-'use client'
+"use client";
 
-import React, { useState, useEffect } from 'react'
-import Image from 'next/image'
+import React, { useState, useMemo, useEffect } from "react";
+import Image from "next/image";
+import Link from "next/link";
 
-export default function Carousel() {
-  const [products, setProducts] = useState([])
-  const [currentIndex, setCurrentIndex] = useState(0)
+function getVisibleCount() {
+  if (typeof window === "undefined") return 4;
+  const w = window.innerWidth;
+  if (w < 640) return 2;
+  if (w < 1024) return 3;
+  return 4;
+}
+
+export default function Carousel({ products: productsProp = [] }) {
+  const [currentPage, setCurrentPage] = useState(0);
+  const [visibleCount, setVisibleCount] = useState(4);
+
+  const products = useMemo(() => {
+    if (!Array.isArray(productsProp)) return [];
+    return productsProp.filter((p) => p.destacado === true);
+  }, [productsProp]);
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await fetch('http://localhost:5000/api/productos')
-        const data = await response.json()
-        const featuredProducts = data.filter(product => product.destacado === true)
-        setProducts(featuredProducts)
-      } catch (error) {
-        console.error('Error al obtener productos destacados:', error)
-      }
-    }
+    setVisibleCount(getVisibleCount());
+    const onResize = () => setVisibleCount(getVisibleCount());
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
 
-    fetchProducts()
-  }, [])
+  const totalPages = Math.max(1, Math.ceil(products.length / visibleCount));
 
-  const nextSlide = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % products.length)
-  }
+  const nextPage = () => {
+    setCurrentPage((prev) => (prev + 1) % totalPages);
+  };
 
-  const prevSlide = () => {
-    setCurrentIndex((prevIndex) => (prevIndex - 1 + products.length) % products.length)
-  }
+  const prevPage = () => {
+    setCurrentPage((prev) => (prev - 1 + totalPages) % totalPages);
+  };
+
+  if (products.length === 0) return null;
+
+  const cardWidthPercent = 100 / visibleCount;
 
   return (
-    <div className="relative w-full mx-auto py-8 bg-gray-50">
-      {products.length > 0 ? (
-        <>
-          <div className="overflow-hidden">
+    <section className="mb-6 sm:mb-8">
+      <h2 className="font-display text-lg sm:text-xl font-bold text-foreground mb-3">
+        Destacados
+      </h2>
+      <div className="relative overflow-hidden rounded-xl bg-surface-hover/50 dark:bg-surface border border-border">
+        <div
+          className="flex transition-transform duration-300 ease-out"
+          style={{
+            width: `${totalPages * 100}%`,
+            transform: `translateX(-${currentPage * (100 / totalPages)}%)`,
+          }}
+        >
+          {Array.from({ length: totalPages }).map((_, pageIndex) => (
             <div
-              className="flex transition-transform duration-500 ease-in-out"
-              style={{
-                transform: `translateX(-${(currentIndex * 100) / Math.max(products.length, 1)}%)`,
-              }}
+              key={pageIndex}
+              className="flex flex-shrink-0 flex-row"
+              style={{ width: `${100 / totalPages}%` }}
             >
-              {products.map((product) => (
-                <div key={product._id} className="w-1/3 flex-shrink-0 px-4">
-                  <div className="p-4 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
-                    <Image
-                      src={product.imagen}
-                      alt={product.nombre}
-                      width={180}
-                      height={180}
-                      quality={90}
-                      layout="responsive"
-                      className="w-full h-auto mb-4 rounded-md object-cover"
-                    />
-                    <h3 className="text-base font-semibold text-gray-800 truncate">{product.nombre}</h3>
-                    <p className="text-sm font-medium text-gray-600 mt-2">${product.precio.toFixed(2)}</p>
+              {products
+                .slice(pageIndex * visibleCount, pageIndex * visibleCount + visibleCount)
+                .map((product) => (
+                  <div
+                    key={product._id}
+                    className="flex-shrink-0 px-2 py-2 sm:px-3 sm:py-3"
+                    style={{ width: `${cardWidthPercent}%` }}
+                  >
+                    <Link
+                      href={`/producto/${product._id}`}
+                      className="flex items-center gap-2 sm:gap-3 rounded-lg bg-surface border border-border p-2 sm:p-3 shadow-sm hover:shadow-md hover:ring-2 hover:ring-brand/30 dark:hover:ring-brand/50 transition-all duration-200 h-full min-h-[80px] sm:min-h-[88px]"
+                    >
+                      <div className="relative w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 rounded-lg overflow-hidden bg-surface-hover">
+                        <Image
+                          src={product.imagen}
+                          alt={product.nombre}
+                          fill
+                          sizes="(max-width: 640px) 80px, 96px"
+                          className="object-cover"
+                        />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs sm:text-sm font-display font-semibold text-foreground line-clamp-2">
+                          {product.nombre}
+                        </p>
+                        <p className="text-xs sm:text-sm font-bold text-brand dark:text-brand-light mt-0.5">
+                          ${Number(product.precio).toFixed(2)}
+                        </p>
+                      </div>
+                    </Link>
                   </div>
-                </div>
+                ))}
+            </div>
+          ))}
+        </div>
+
+        {totalPages > 1 && (
+          <>
+            <button
+              type="button"
+              onClick={prevPage}
+              className="absolute left-1 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-surface border border-border shadow-sm text-foreground hover:bg-brand hover:text-white dark:hover:bg-brand transition-colors z-10 flex items-center justify-center"
+              aria-label="Anterior"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <button
+              type="button"
+              onClick={nextPage}
+              className="absolute right-1 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-surface border border-border shadow-sm text-foreground hover:bg-brand hover:text-white dark:hover:bg-brand transition-colors z-10 flex items-center justify-center"
+              aria-label="Siguiente"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+            <div className="flex justify-center gap-1.5 py-2">
+              {Array.from({ length: totalPages }).map((_, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => setCurrentPage(i)}
+                  className={`h-1.5 rounded-full transition-all ${
+                    i === currentPage
+                      ? "w-5 bg-brand dark:bg-brand-light"
+                      : "w-1.5 bg-border hover:bg-foreground/30"
+                  }`}
+                  aria-label={`Ir a página ${i + 1}`}
+                />
               ))}
             </div>
-          </div>
-
-          <button
-            onClick={prevSlide}
-            className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-gray-800/70 p-2 rounded-full hover:bg-gray-800 transition-colors z-10"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-5 h-5 text-white">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
-
-          <button
-            onClick={nextSlide}
-            className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-gray-800/70 p-2 rounded-full hover:bg-gray-800 transition-colors z-10"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-5 h-5 text-white">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
-        </>
-      ) : (
-        <p className="text-center text-gray-500">Cargando productos destacados...</p>
-      )}
-    </div>
-  )
+          </>
+        )}
+      </div>
+    </section>
+  );
 }

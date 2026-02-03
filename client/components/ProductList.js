@@ -3,7 +3,7 @@ import Image from "next/image";
 
 export default function ProductList ({ productos, onEdit, onDelete }) {
   
-  const headerClasses = "px-6 py-3 border-b text-sm font-bold text-gray-700 uppercase tracking-wider";
+  const headerClasses = "px-4 sm:px-6 py-3 border-b border-border text-sm font-bold text-foreground uppercase tracking-wider";
 
   const columns = [
     { name: "Nombre", align: "left" },
@@ -17,8 +17,8 @@ export default function ProductList ({ productos, onEdit, onDelete }) {
   ];
 
   return (
-    <div className="overflow-x-auto border bg-gray-200 rounded-md shadow-sm">
-      <table className="min-w-full bg-white">
+    <div className="overflow-x-auto border border-border rounded-xl shadow-sm bg-surface">
+      <table className="min-w-full bg-surface">
         <thead>
           <tr>
             {columns.map((col) => (
@@ -33,15 +33,15 @@ export default function ProductList ({ productos, onEdit, onDelete }) {
         </thead>
         <tbody>
           {productos.map((producto) => (
-            <tr key={producto._id} className="hover:bg-gray-100">
-              <td className="px-6 py-4 border-b text-sm text-gray-800">{producto.nombre}</td>
-              <td className="px-6 py-4 border-b text-sm text-gray-800">{producto.descripcion}</td>
-              <td className="px-6 py-4 border-b text-sm text-gray-800">${producto.precio.toFixed(2)}</td>
-              <td className="px-6 py-4 border-b text-sm text-gray-800">{producto.marca}</td>
-              <td className="px-6 py-4 border-b text-sm text-gray-800">
-                {producto.sabores.map((sabor) => sabor.sabor).join(", ")}
+            <tr key={producto._id} className="hover:bg-surface-hover">
+              <td className="px-4 sm:px-6 py-4 border-b border-border text-sm text-foreground max-w-[120px] truncate">{producto.nombre}</td>
+              <td className="px-4 sm:px-6 py-4 border-b border-border text-sm text-foreground max-w-[150px] truncate">{producto.descripcion}</td>
+              <td className="px-4 sm:px-6 py-4 border-b border-border text-sm text-foreground">${Number(producto.precio).toFixed(2)}</td>
+              <td className="px-4 sm:px-6 py-4 border-b border-border text-sm text-foreground">{producto.marca}</td>
+              <td className="px-4 sm:px-6 py-4 border-b border-border text-sm text-foreground max-w-[120px] truncate">
+                {producto.sabores?.map((s) => s.sabor).join(", ") || "—"}
               </td>
-              <td className="px-6 py-4 border-b text-sm text-gray-800">
+              <td className="px-4 sm:px-6 py-4 border-b border-border text-sm text-foreground">
                 <Image
                   width={64}
                   height={64}
@@ -49,10 +49,10 @@ export default function ProductList ({ productos, onEdit, onDelete }) {
                   alt={producto.nombre} 
                   className="w-16 h-16 object-cover rounded-md" />
               </td>
-              <td className="px-6 py-4 border-b text-center text-sm text-gray-800">
+              <td className="px-4 sm:px-6 py-4 border-b border-border text-center text-sm text-foreground">
                 {producto.destacado ? "Sí" : "No"}
               </td>
-              <td className="px-6 py-4 border-b text-center text-sm">
+              <td className="px-4 sm:px-6 py-4 border-b border-border text-center text-sm">
                 <div className="flex flex-col items-center gap-2">
                   <button
                     onClick={() => onEdit(producto)}

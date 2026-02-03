@@ -39,10 +39,54 @@ router.put("/profile", authenticateToken, async (req, res) => {
   }
 });
 
+router.post("/google", async (req, res) => {
+  const { email, name, image } = req.body;
+
+  if (!email || !name) {
+    return res.status(400).json({ error: "Email y nombre son requeridos" });
+  }
+
+  try {
+    if (!process.env.JWT_SECRET) {
+      return res.status(500).json({ error: "Configuración del servidor incompleta" });
+    }
+
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      user = new User({
+        name,
+        email,
+        image: image || null,
+        provider: "google",
+      });
+      await user.save();
+    }
+
+    const token = jwt.sign(
+      { id: user._id, email: user.email, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    res.status(200).json({
+      success: true,
+      token,
+      user: {
+        id: user._id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+      },
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
+});
+
 router.post("/register", async (req, res) => {
   const { name, email, password, provider = "credentials" } = req.body;
-
-  console.log('Datos recibidos en el backend:', req.body);
 
   if (!name || !email || !password) {
     return res.status(400).json({ error: "Todos los campos son obligatorios" });
@@ -85,7 +129,6 @@ router.post('/login', async (req, res) => {
 
     const user = await User.findOne({ email }).select("+password");
     if (!user) {
-      console.log("Usuario no encontrado");
       return res.status(401).json({ error: "Credenciales incorrectas" });
     }
 

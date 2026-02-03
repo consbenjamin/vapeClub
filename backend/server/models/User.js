@@ -43,11 +43,11 @@ const UserSchema = new mongoose.Schema(
   }
 );
 
-// Middleware para hashear contraseñas antes de guardar
+// Middleware para hashear contraseñas antes de guardar (omitir si no hay password, ej. usuarios Google)
 UserSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
+  if (!this.password || !this.isModified("password")) return next();
   const salt = await bcrypt.genSalt(10);
-  this.password = bcrypt.hash(this.password, salt); // Hashear la contraseña
+  this.password = await bcrypt.hash(this.password, salt);
   next();
 });
 

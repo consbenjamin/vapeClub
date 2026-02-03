@@ -1,38 +1,39 @@
-import { useEffect } from 'react';
-import { useRouter } from 'next/router';
+import Head from "next/head";
+import Link from "next/link";
+import { useRouter } from "next/router";
 
-const Success = () => {
+export default function Success() {
   const router = useRouter();
-
-  useEffect(() => {
-    // Obtener parámetros de la URL
-    const { payment_id} = router.query;
-
-    // Llamada a tu backend para verificar el estado del pago (opcional)
-    if (payment_id) {
-      console.log('Pago aprobado con ID:', payment_id);
-      // Lógica para verificar el pago o mostrar detalles adicionales
-    }
-  }, [router.query]);
-
-  const goToHome = () => {
-    router.push('/');
-  };
+  const { payment_id } = router.query;
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-green-50">
-      <div className="text-center">
-        <h1 className="text-3xl font-semibold text-green-600">¡Pago Aprobado!</h1>
-        <p className="mt-4 text-lg text-gray-700">Gracias por tu compra. El pago ha sido aprobado exitosamente.</p>
-        <button
-          onClick={goToHome}
-          className="mt-6 px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600"
-        >
-          Volver al Inicio
-        </button>
+    <>
+      <Head>
+        <title>Pago aprobado – VapeClub</title>
+        <meta name="description" content="Tu pago fue aprobado correctamente." />
+      </Head>
+      <div className="flex justify-center items-center min-h-screen bg-background px-4">
+        <div className="text-center max-w-md bg-surface rounded-2xl shadow-lg border border-border p-6 sm:p-8">
+          <div className="w-16 h-16 mx-auto rounded-full bg-brand/20 dark:bg-brand/30 flex items-center justify-center mb-6">
+            <svg className="w-8 h-8 text-brand" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <h1 className="font-display text-2xl font-bold text-foreground">¡Pago aprobado!</h1>
+          <p className="mt-4 text-foreground/80">
+            Gracias por tu compra. El pago ha sido aprobado exitosamente.
+          </p>
+          {payment_id && (
+            <p className="mt-2 text-sm text-foreground/60">ID: {payment_id}</p>
+          )}
+          <Link
+            href="/"
+            className="mt-8 inline-flex px-6 py-3 rounded-xl bg-brand text-white font-semibold hover:bg-brand-dark dark:hover:bg-brand-light transition-colors"
+          >
+            Volver al inicio
+          </Link>
+        </div>
       </div>
-    </div> 
+    </>
   );
-};
-
-export default Success;
+}

@@ -1,50 +1,42 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
 import useStore from "@/store/store";
+import Head from "next/head";
+import Link from "next/link";
 
 export default function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-
   const { registerUser, loading, error, setError } = useStore();
   const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(""); 
-
+    setError("");
     if (password !== confirmPassword) {
       setError("Las contraseñas no coinciden");
       return;
     }
-
-    const userData = {
-      name: name,
-      email: email,
-      password: password,
-    };
-
-    const success = await registerUser(userData);
-
-    if (success) {
-      router.push("/");
-    } else if (error) {
-      setError(error);
-    }
+    const success = await registerUser({ name, email, password });
+    if (success) router.push("/");
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-lg">
-        <h2 className="text-center text-3xl font-extrabold text-gray-900">
-          Crear una Cuenta
-        </h2>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="rounded-md shadow-sm -space-y-px">
+    <>
+      <Head>
+        <title>Crear cuenta – VapeClub</title>
+        <meta name="description" content="Creá tu cuenta en VapeClub." />
+      </Head>
+      <div className="min-h-screen flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-md w-full space-y-8 bg-surface p-6 sm:p-8 rounded-2xl shadow-lg border border-border">
+          <h2 className="font-display text-center text-2xl sm:text-3xl font-bold text-foreground">Crear una cuenta</h2>
+          <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
             <div>
-              <label htmlFor="name" className="sr-only">Nombre</label>
+              <label htmlFor="name" className="block text-sm font-medium text-foreground mb-1">
+                Nombre
+              </label>
               <input
                 id="name"
                 name="name"
@@ -52,12 +44,14 @@ export default function Register() {
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Nombre"
+                className="block w-full px-4 py-2.5 border border-border rounded-xl text-foreground bg-surface placeholder-foreground/50 focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand"
+                placeholder="Tu nombre"
               />
             </div>
-            <div className="mt-4">
-              <label htmlFor="email" className="sr-only">Email</label>
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-foreground mb-1">
+                Correo electrónico
+              </label>
               <input
                 id="email"
                 name="email"
@@ -65,12 +59,14 @@ export default function Register() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Correo electrónico"
+                className="block w-full px-4 py-2.5 border border-border rounded-xl text-foreground bg-surface placeholder-foreground/50 focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand"
+                placeholder="tu@email.com"
               />
             </div>
-            <div className="mt-4">
-              <label htmlFor="password" className="sr-only">Contraseña</label>
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-foreground mb-1">
+                Contraseña
+              </label>
               <input
                 id="password"
                 name="password"
@@ -78,12 +74,14 @@ export default function Register() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Contraseña"
+                className="block w-full px-4 py-2.5 border border-border rounded-xl text-foreground bg-surface placeholder-foreground/50 focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand"
+                placeholder="••••••••"
               />
             </div>
-            <div className="mt-4">
-              <label htmlFor="confirmPassword" className="sr-only">Confirmar Contraseña</label>
+            <div>
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-foreground mb-1">
+                Confirmar contraseña
+              </label>
               <input
                 id="confirmPassword"
                 name="confirmPassword"
@@ -91,34 +89,31 @@ export default function Register() {
                 required
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Confirmar Contraseña"
+                className="block w-full px-4 py-2.5 border border-border rounded-xl text-foreground bg-surface placeholder-foreground/50 focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand"
+                placeholder="••••••••"
               />
             </div>
-          </div>
-
-          {error && <div className="text-sm text-red-500 text-center">{error}</div>}
-
-          <div>
+            {error && (
+              <p className="text-sm text-red-600 text-center" role="alert">
+                {error}
+              </p>
+            )}
             <button
               type="submit"
               disabled={loading}
-              className={`w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
+              className={`w-full py-3 px-4 rounded-xl font-semibold text-white bg-brand hover:bg-brand-dark focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 transition-colors ${loading ? "opacity-60 cursor-not-allowed" : ""}`}
             >
               {loading ? "Registrando..." : "Registrarse"}
             </button>
-          </div>
-        </form>
-
-        <div className="mt-6 text-center">
-          <p className="text-sm text-gray-600">
-            ¿Ya tienes una cuenta?{" "}
-            <a href="/auth/login" className="font-medium text-indigo-600 hover:text-indigo-500">
-              Inicia sesión
-            </a>
+          </form>
+          <p className="text-center text-sm text-foreground/80">
+            ¿Ya tenés cuenta?{" "}
+            <Link href="/auth/login" className="font-medium text-brand hover:text-brand-dark dark:hover:text-brand-light">
+              Iniciá sesión
+            </Link>
           </p>
         </div>
       </div>
-    </div>
+    </>
   );
 }

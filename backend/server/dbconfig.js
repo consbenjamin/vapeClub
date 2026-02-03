@@ -8,13 +8,21 @@ const userRoutes = require('./routes/user');
 const paymentRoutes = require('./routes/payment');
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  'http://localhost:3000',
+  'http://localhost:3001',
+  'https://vapeclub.vercel.app',
+  'https://vapeclub-production.up.railway.app',
+].filter(Boolean);
+
 app.use(cors({
-  origin: ['https://vapeclub.vercel.app', 'https://vapeclub.vercel.app/auth/register', 'https://vapeclub.vercel.app/auth/login'],
+  origin: allowedOrigins,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true

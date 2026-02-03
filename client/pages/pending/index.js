@@ -1,27 +1,39 @@
-// pages/pending.js
-import { useEffect } from 'react';
-import { useRouter } from 'next/router';
+import Head from "next/head";
+import Link from "next/link";
+import { useRouter } from "next/router";
 
-const Pending = () => {
+export default function Pending() {
   const router = useRouter();
-
-  useEffect(() => {
-    // Obtener parámetros de la URL
-    const { payment_id } = router.query;
-
-    if (payment_id) {
-      console.log('El pago está pendiente con ID:', payment_id);
-    }
-  }, [router.query]);
+  const { payment_id } = router.query;
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-yellow-50">
-      <div className="text-center">
-        <h1 className="text-3xl font-semibold text-yellow-600">Pago Pendiente</h1>
-        <p className="mt-4 text-lg text-gray-700">Tu pago está pendiente. Te notificaremos cuando se complete.</p>
+    <>
+      <Head>
+        <title>Pago pendiente – VapeClub</title>
+        <meta name="description" content="Tu pago está pendiente de confirmación." />
+      </Head>
+      <div className="flex justify-center items-center min-h-screen bg-background px-4">
+        <div className="text-center max-w-md bg-surface rounded-2xl shadow-lg border border-border p-6 sm:p-8">
+          <div className="w-16 h-16 mx-auto rounded-full bg-amber-100 flex items-center justify-center mb-6">
+            <svg className="w-8 h-8 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h1 className="font-display text-2xl font-bold text-foreground">Pago pendiente</h1>
+          <p className="mt-4 text-foreground/80">
+            Tu pago está pendiente. Te notificaremos cuando se complete.
+          </p>
+          {payment_id && (
+            <p className="mt-2 text-sm text-foreground/60">ID: {payment_id}</p>
+          )}
+          <Link
+            href="/"
+            className="mt-8 inline-flex px-6 py-3 rounded-xl bg-brand text-white font-semibold hover:bg-brand-dark dark:hover:bg-brand-light transition-colors"
+          >
+            Volver al inicio
+          </Link>
+        </div>
       </div>
-    </div>
+    </>
   );
-};
-
-export default Pending;
+}

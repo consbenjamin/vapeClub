@@ -1,42 +1,137 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import Card from "@/components/Card";
 import Carousel from "@/components/Carousel";
 import Navbar from "@/components/NavBar";
+import SearchBar from "@/components/SearchBar";
 import useStore from "@/store/store";
 import { useRouter } from "next/router";
+import Head from "next/head";
+
+function ProductCardSkeleton() {
+  return (
+    <div className="w-full max-w-xs mx-auto animate-pulse rounded-xl bg-surface-hover dark:bg-surface p-3 border border-border">
+      <div className="aspect-[4/3] w-full rounded-lg bg-border" />
+      <div className="mt-3 h-5 w-3/4 rounded bg-border" />
+      <div className="mt-2 h-4 w-1/2 rounded bg-border" />
+      <div className="mt-4 h-6 w-1/3 rounded bg-border" />
+    </div>
+  );
+}
 
 export default function Home() {
   const { products, fetchProducts, loading, error } = useStore();
   const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState("recent");
 
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
+
+  const filteredAndSortedProducts = useMemo(() => {
+    let list = Array.isArray(products) ? [...products] : [];
+    const q = (searchQuery || "").toLowerCase().trim();
+    if (q) {
+      list = list.filter(
+        (p) =>
+          (p.nombre && p.nombre.toLowerCase().includes(q)) ||
+          (p.marca && p.marca.toLowerCase().includes(q))
+      );
+    }
+    if (sortBy === "price_asc") list.sort((a, b) => (Number(a.precio) || 0) - (Number(b.precio) || 0));
+    if (sortBy === "price_desc") list.sort((a, b) => (Number(b.precio) || 0) - (Number(a.precio) || 0));
+    return list;
+  }, [products, searchQuery, sortBy]);
 
   const handleCardClick = (productId) => {
     router.push(`/producto/${productId}`);
   };
 
   return (
-    <div>
+    <>
+      <Head>
+        <title>VapeClub – Tu tienda de vaping</title>
+        <meta name="description" content="Encontrá los mejores productos de vaping. Liquidos, dispositivos y accesorios." />
+      </Head>
       <Navbar />
-      <div className="container mx-auto px-4 py-6">
-        {loading && <p className="text-center">Cargando productos...</p>}
-        {error && <p className="text-center text-red-500">{error}</p>}
-        {/* <Carousel /> */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {products.map((product) => (
-            <Card
-              key={product._id} 
-              imagen={product.imagen} 
-              nombre={product.nombre} 
-              precio={product.precio}
-              marca={product.marca}
-              onClick={() => handleCardClick(product._id)} 
-            />
-          ))}
+      <div className="flex-grow flex flex-col">
+        <section className="bg-gradient-to-br from-brand-50 to-brand-100/50 dark:from-brand-900/30 dark:to-brand-800/20 py-12 sm:py-16 px-4">
+          <div className="container mx-auto text-center max-w-2xl">
+            <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-4">
+              Tu tienda de vaping
+            </h1>
+            <p className="text-foreground/80 text-base sm:text-lg mb-6 sm:mb-8">
+              Productos de calidad, envíos rápidos y el mejor asesoramiento.
+            </p>
+            <a
+              href="#productos"
+              className="inline-flex items-center px-5 py-2.5 sm:px-6 sm:py-3 rounded-xl bg-brand text-white font-semibold hover:bg-brand-dark dark:hover:bg-brand-light transition-colors shadow-md"
+            >
+              Ver productos
+            </a>
+          </div>
+        </section>
+
+        <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 flex-grow max-w-7xl">
+          <Carousel products={products} />
+
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
+            <h2 id="productos" className="font-display text-xl sm:text-2xl font-bold text-foreground">
+              Productos
+            </h2>
+            <div className="flex flex-col sm:flex-row gap-3 sm:items-center w-full lg:w-auto">
+              <div className="w-full sm:max-w-xs lg:max-w-sm">
+                <SearchBar value={searchQuery} onChange={setSearchQuery} />
+              </div>
+              <label htmlFor="sort" className="sr-only">Ordenar por</label>
+              <select
+                id="sort"
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="w-full sm:w-auto px-4 py-2.5 border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand bg-surface"
+                aria-label="Ordenar productos"
+              >
+                <option value="recent">Más recientes</option>
+                <option value="price_asc">Precio: menor a mayor</option>
+                <option value="price_desc">Precio: mayor a menor</option>
+              </select>
+            </div>
+          </div>
+
+          {loading && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+              {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+                <ProductCardSkeleton key={i} />
+              ))}
+            </div>
+          )}
+          {error && (
+            <p className="text-center text-red-500 dark:text-red-400 py-8" role="alert">
+              {error}
+            </p>
+          )}
+          {!loading && !error && products.length === 0 && (
+            <p className="text-center text-foreground/70 py-12">No hay productos disponibles.</p>
+          )}
+          {!loading && !error && products.length > 0 && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+              {filteredAndSortedProducts.map((product) => (
+                <Card
+                  key={product._id}
+                  imagen={product.imagen}
+                  nombre={product.nombre}
+                  precio={product.precio}
+                  marca={product.marca}
+                  onClick={() => handleCardClick(product._id)}
+                />
+              ))}
+            </div>
+          )}
+          {!loading && !error && products.length > 0 && filteredAndSortedProducts.length === 0 && (
+            <p className="text-center text-foreground/70 py-8">No hay productos que coincidan con tu búsqueda.</p>
+          )}
         </div>
       </div>
-    </div>
+    </>
   );
 }

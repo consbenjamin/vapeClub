@@ -1,21 +1,22 @@
-import React, { useEffect, useState } from 'react';
-import ProductDetail from '@/components/ProductDetail';
-import Navbar from '@/components/NavBar';
-import { useRouter } from 'next/router';
+import React, { useEffect, useState } from "react";
+import Head from "next/head";
+import ProductDetail from "@/components/ProductDetail";
+import Navbar from "@/components/NavBar";
+import { useRouter } from "next/router";
+
+const URL = process.env.NEXT_PUBLIC_NEXT_LOCAL_URL || process.env.NEXT_LOCAL_URL || process.env.NEXT_PUBLIC_URL;
 
 export default function ProductDetailPage() {
   const router = useRouter();
   const { id } = router.query;
   const [product, setProduct] = useState(null);
 
-  const URL = process.env.NEXT_PUBLIC_URL;  
-
   useEffect(() => {
     if (id) {
       fetch(`${URL}/api/productos/${id}`)
         .then((res) => res.json())
         .then((data) => setProduct(data))
-        .catch((err) => console.error('Error fetching product:', err));
+        .catch(() => setProduct(null));
     }
   }, [id]);
 
@@ -23,13 +24,20 @@ export default function ProductDetailPage() {
     return (
       <>
         <Navbar />
-        <p className="text-center py-8">Cargando detalles del producto...</p>
+        <Head>
+          <title>Producto – VapeClub</title>
+        </Head>
+        <p className="text-center py-12 text-foreground/80">Cargando detalles del producto...</p>
       </>
     );
   }
 
   return (
     <>
+      <Head>
+        <title>{product.nombre} – VapeClub</title>
+        <meta name="description" content={product.descripcion ? product.descripcion.slice(0, 160) : `Comprar ${product.nombre} en VapeClub`} />
+      </Head>
       <Navbar />
       <ProductDetail
         key={product._id}

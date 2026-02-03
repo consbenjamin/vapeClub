@@ -1,7 +1,56 @@
 import { toast } from 'react-hot-toast';
 import { create } from 'zustand';
 
-const URL = process.env.NEXT_PUBLIC_URL;  
+const CART_STORAGE_KEY = 'vapeclub-cart';
+const THEME_STORAGE_KEY = 'vapeclub-theme';
+
+function getBaseUrl() {
+  const env = process.env.NEXT_PUBLIC_NEXT_LOCAL_URL || process.env.NEXT_LOCAL_URL || process.env.NEXT_PUBLIC_URL;
+  const base = (env || '').toString().replace(/\/$/, '');
+  if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+    return base || 'http://localhost:5001';
+  }
+  return base;
+}
+
+function loadCartFromStorage() {
+  if (typeof window === 'undefined') return [];
+  try {
+    const saved = localStorage.getItem(CART_STORAGE_KEY);
+    return saved ? JSON.parse(saved) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveCartToStorage(cart) {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
+  } catch {}
+}
+
+function getThemeFromStorage() {
+  if (typeof window === 'undefined') return 'light';
+  try {
+    return localStorage.getItem(THEME_STORAGE_KEY) || 'light';
+  } catch {
+    return 'light';
+  }
+}
+
+function applyTheme(mode) {
+  if (typeof window === 'undefined') return;
+  const root = document.documentElement;
+  if (mode === 'dark') {
+    root.classList.add('dark');
+  } else {
+    root.classList.remove('dark');
+  }
+  try {
+    localStorage.setItem(THEME_STORAGE_KEY, mode);
+  } catch {}
+}
 
 const useStore = create((set) => ({
   products: [],
@@ -10,6 +59,20 @@ const useStore = create((set) => ({
   error: null,
   productAdded: false,
   cart: [],
+  theme: 'light',
+  setTheme: (mode) => {
+    applyTheme(mode);
+    set({ theme: mode });
+  },
+  hydrateTheme: () => {
+    const stored = getThemeFromStorage();
+    applyTheme(stored);
+    set({ theme: stored });
+  },
+  hydrateCart: () => set((state) => {
+    const saved = loadCartFromStorage();
+    return saved.length ? { cart: saved } : {};
+  }),
 
   setError: (errorMessage) => set({ error: errorMessage }),
 
@@ -17,8 +80,9 @@ const useStore = create((set) => ({
 
   fetchProducts: async () => {
     set({ loading: true });
+    const baseUrl = getBaseUrl();
     try {
-      const response = await fetch(`${URL}/api/productos`, {
+      const response = await fetch(`${baseUrl}/api/productos`, {
         method: 'GET',
         // headers: {
         //   'Authorization': getToken(),
@@ -30,8 +94,9 @@ const useStore = create((set) => ({
       const data = await response.json();
       set({ products: data });
     } catch (error) {
-      set({ error: error.message });
-      console.error('Error al cargar los productos:', error);
+      const msg = baseUrl ? error.message : 'URL del backend no configurada. Revisa .env.local (NEXT_PUBLIC_NEXT_LOCAL_URL) y reinicia el dev server.';
+      set({ error: msg });
+      console.error('Error al cargar los productos:', baseUrl ? error : 'baseUrl vacío', baseUrl ? '' : '→', baseUrl || '(vacío)');
     } finally {
       set({ loading: false });
     }
@@ -39,8 +104,9 @@ const useStore = create((set) => ({
 
   fetchProductById: async (id) => {
     set({ loading: true });
+    const baseUrl = getBaseUrl();
     try {
-      const response = await fetch(`${URL}/api/productos/${id}`);
+      const response = await fetch(`${baseUrl}/api/productos/${id}`);
       if (!response.ok) {
         throw new Error('Error al obtener el producto');
       }
@@ -55,8 +121,9 @@ const useStore = create((set) => ({
 
   addProduct: async (productoAEnviar, imagenFile) => {
     set({ loading: true });
+    const baseUrl = getBaseUrl();
     try {
-      const response = await fetch(`${URL}/api/productos`, {
+      const response = await fetch(`${baseUrl}/api/productos`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -74,7 +141,7 @@ const useStore = create((set) => ({
       if (imagenFile) {
         const formData = new FormData();
         formData.append('imagen', imagenFile);
-        const imagenResponse = await fetch(`${URL}/api/productos/${nuevoProducto._id}/imagen`, {
+        const imagenResponse = await fetch(`${baseUrl}/api/productos/${nuevoProducto._id}/imagen`, {
           method: 'POST',
           // headers: {
           //   'Authorization': getToken(),
@@ -102,9 +169,10 @@ const useStore = create((set) => ({
   },
 
   editProduct: async (producto, newImage) => {
+    const baseUrl = getBaseUrl();
     try {
       const response = await fetch(
-        `${URL}/api/productos/${producto._id}`,
+        `${baseUrl}/api/productos/${producto._id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -121,7 +189,7 @@ const useStore = create((set) => ({
         formData.append("image", newImage);
 
         const imageResponse = await fetch(
-          `${URL}/api/productos/${producto._id}/imagen`,
+          `${baseUrl}/api/productos/${producto._id}/imagen`,
           {
             method: "PUT",
             body: formData,
@@ -141,9 +209,9 @@ const useStore = create((set) => ({
 
   registerUser: async (userData) => {
     set({ loading: true });
+    const baseUrl = getBaseUrl();
     try {
-      console.log("Datos que se enviarán al backend:", userData)
-      const response = await fetch(`${URL}/api/user/register`, {
+      const response = await fetch(`${baseUrl}/api/user/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -158,10 +226,11 @@ const useStore = create((set) => ({
 
       const data = await response.json();
       toast.success(data.message || "Usuario registrado exitosamente");
+      return true;
     } catch (error) {
       set({ error: error.message });
-      console.error("Error al registrar el usuario:", error);
       toast.error(error.message || "Error al registrar el usuario");
+      return false;
     } finally {
       set({ loading: false });
     }
@@ -170,29 +239,28 @@ const useStore = create((set) => ({
   addToCart: (product) =>
     set((state) => {
       const existingProduct = state.cart.find((item) => item._id === product._id && item.sabor === product.sabor);
-      if (existingProduct) {
-        return {
-          cart: state.cart.map((item) =>
+      const newCart = existingProduct
+        ? state.cart.map((item) =>
             item._id === product._id && item.sabor === product.sabor
               ? { ...item, quantity: item.quantity + (product.quantity || 1) }
               : item
-          ),
-        };
-      }
-      return { cart: [...state.cart, { ...product, quantity: product.quantity || 1 }] };
-    }
-  ),
+          )
+        : [...state.cart, { ...product, quantity: product.quantity || 1 }];
+      saveCartToStorage(newCart);
+      return { cart: newCart };
+    }),
 
   removeFromCart: (productId, sabor) =>
-    set((state) => ({
-      cart: state.cart.filter((item) => !(item._id === productId && item.sabor === sabor)),
-    })
-  ),
+    set((state) => {
+      const newCart = state.cart.filter((item) => !(item._id === productId && item.sabor === sabor));
+      saveCartToStorage(newCart);
+      return { cart: newCart };
+    }),
   clearCart: () =>
-    set(() => ({
-      cart: [],
-    })
-  ),
+    set(() => {
+      saveCartToStorage([]);
+      return { cart: [] };
+    }),
 
 }));
 
