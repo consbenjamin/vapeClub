@@ -7,13 +7,15 @@ import useStore from "@/store/store";
 
 export default function App({ Component, pageProps }) {
   const hydrateCart = useStore((state) => state.hydrateCart);
+  const hydrateWishlist = useStore((state) => state.hydrateWishlist);
 
   const hydrateTheme = useStore((state) => state.hydrateTheme);
 
   useEffect(() => {
     hydrateCart();
+    hydrateWishlist();
     hydrateTheme();
-  }, [hydrateCart, hydrateTheme]);
+  }, [hydrateCart, hydrateWishlist, hydrateTheme]);
 
   return (
     <SessionProvider session={pageProps.session}>

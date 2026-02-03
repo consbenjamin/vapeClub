@@ -1,7 +1,16 @@
 import React from "react";
 import Image from "next/image";
 
-export default function Card({ imagen, nombre, precio, marca, onClick }) {
+export default function Card({
+  imagen,
+  nombre,
+  precio,
+  marca,
+  onClick,
+  onToggleWishlist,
+  isWishlisted = false,
+  wishlistAriaLabel = "Agregar a favoritos",
+}) {
   return (
     <div className="mx-auto w-full max-w-xs">
       <div
@@ -12,6 +21,35 @@ export default function Card({ imagen, nombre, precio, marca, onClick }) {
         tabIndex={0}
         aria-label={`Ver ${nombre}`}
       >
+        {onToggleWishlist && (
+          <button
+            type="button"
+            onClick={(event) => {
+              event.stopPropagation();
+              onToggleWishlist();
+            }}
+            aria-label={wishlistAriaLabel}
+            className={`absolute right-4 top-4 z-10 inline-flex h-9 w-9 items-center justify-center rounded-full border transition-colors ${
+              isWishlisted
+                ? "bg-brand text-white border-brand shadow-md"
+                : "bg-surface text-foreground/70 border-border hover:text-brand hover:border-brand"
+            }`}
+          >
+            <svg
+              className="h-5 w-5"
+              viewBox="0 0 24 24"
+              fill={isWishlisted ? "currentColor" : "none"}
+              stroke="currentColor"
+              strokeWidth="1.5"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12.001 5.2c1.9-2.08 5.2-2.32 7.38-.64 2.53 1.95 2.66 5.75.4 7.86L12 20.2l-7.78-7.78c-2.26-2.11-2.13-5.91.4-7.86 2.18-1.68 5.48-1.44 7.38.64z"
+              />
+            </svg>
+          </button>
+        )}
         <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg bg-surface-hover">
           <Image
             className="object-cover object-center transition-transform duration-300 hover:scale-105"

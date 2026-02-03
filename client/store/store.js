@@ -3,6 +3,7 @@ import { create } from 'zustand';
 
 const CART_STORAGE_KEY = 'vapeclub-cart';
 const THEME_STORAGE_KEY = 'vapeclub-theme';
+const WISHLIST_STORAGE_KEY = 'vapeclub-wishlist';
 
 function getBaseUrl() {
   const env = process.env.NEXT_PUBLIC_NEXT_LOCAL_URL || process.env.NEXT_LOCAL_URL || process.env.NEXT_PUBLIC_URL;
@@ -30,6 +31,23 @@ function saveCartToStorage(cart) {
   } catch {}
 }
 
+function loadWishlistFromStorage() {
+  if (typeof window === 'undefined') return [];
+  try {
+    const saved = localStorage.getItem(WISHLIST_STORAGE_KEY);
+    return saved ? JSON.parse(saved) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveWishlistToStorage(wishlist) {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(WISHLIST_STORAGE_KEY, JSON.stringify(wishlist));
+  } catch {}
+}
+
 function getThemeFromStorage() {
   if (typeof window === 'undefined') return 'light';
   try {
@@ -52,13 +70,14 @@ function applyTheme(mode) {
   } catch {}
 }
 
-const useStore = create((set) => ({
+const useStore = create((set, get) => ({
   products: [],
   product: null,
   loading: false,
   error: null,
   productAdded: false,
   cart: [],
+  wishlist: [],
   theme: 'light',
   setTheme: (mode) => {
     applyTheme(mode);
@@ -72,6 +91,10 @@ const useStore = create((set) => ({
   hydrateCart: () => set((state) => {
     const saved = loadCartFromStorage();
     return saved.length ? { cart: saved } : {};
+  }),
+  hydrateWishlist: () => set((state) => {
+    const saved = loadWishlistFromStorage();
+    return saved.length ? { wishlist: saved } : {};
   }),
 
   setError: (errorMessage) => set({ error: errorMessage }),
@@ -261,6 +284,33 @@ const useStore = create((set) => ({
       saveCartToStorage([]);
       return { cart: [] };
     }),
+
+  addToWishlist: (product) =>
+    set((state) => {
+      const exists = state.wishlist.some((item) => item._id === product._id);
+      if (exists) return {};
+      const newWishlist = [...state.wishlist, product];
+      saveWishlistToStorage(newWishlist);
+      return { wishlist: newWishlist };
+    }),
+  removeFromWishlist: (productId) =>
+    set((state) => {
+      const newWishlist = state.wishlist.filter((item) => item._id !== productId);
+      saveWishlistToStorage(newWishlist);
+      return { wishlist: newWishlist };
+    }),
+  toggleWishlist: (product) =>
+    set((state) => {
+      const exists = state.wishlist.some((item) => item._id === product._id);
+      const newWishlist = exists
+        ? state.wishlist.filter((item) => item._id !== product._id)
+        : [...state.wishlist, product];
+      saveWishlistToStorage(newWishlist);
+      return { wishlist: newWishlist };
+    }),
+  isInWishlist: (productId) => {
+    return get().wishlist.some((item) => item._id === productId);
+  },
 
 }));
 

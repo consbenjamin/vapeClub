@@ -19,7 +19,7 @@ function ProductCardSkeleton() {
 }
 
 export default function Home() {
-  const { products, fetchProducts, loading, error } = useStore();
+  const { products, fetchProducts, loading, error, toggleWishlist, wishlist } = useStore();
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("recent");
@@ -123,6 +123,13 @@ export default function Home() {
                   precio={product.precio}
                   marca={product.marca}
                   onClick={() => handleCardClick(product._id)}
+                  onToggleWishlist={() => toggleWishlist(product)}
+                  isWishlisted={wishlist.some((item) => item._id === product._id)}
+                  wishlistAriaLabel={
+                    wishlist.some((item) => item._id === product._id)
+                      ? "Quitar de favoritos"
+                      : "Agregar a favoritos"
+                  }
                 />
               ))}
             </div>

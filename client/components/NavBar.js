@@ -13,8 +13,9 @@ export default function Navbar() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const userMenuRef = useRef(null);
   const { data: session } = useSession();
-  const { cart, theme, setTheme } = useStore();
+  const { cart, theme, setTheme, wishlist } = useStore();
   const cartItemCount = cart.reduce((total, item) => total + item.quantity, 0);
+  const wishlistCount = wishlist.length;
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -40,8 +41,6 @@ export default function Navbar() {
       .slice(0, 2);
   };
 
-  const navItems = [];
-
   return (
     <>
       <header className="sticky top-0 z-20 border-b border-border bg-surface/95 dark:bg-surface backdrop-blur">
@@ -50,18 +49,7 @@ export default function Navbar() {
             <Link href="/" className="text-xl sm:text-2xl font-display font-bold text-foreground shrink-0">
               VapeClub
             </Link>
-
-            <nav className="hidden md:flex items-center space-x-6">
-              {navItems.map((item) => (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className="text-foreground/80 hover:text-brand transition-colors font-medium"
-                >
-                  {item.name}
-                </Link>
-              ))}
-            </nav>
+            <div className="hidden md:flex flex-1" aria-hidden="true" />
 
             <div className="flex items-center gap-2 sm:gap-3 shrink-0">
               <button
@@ -94,6 +82,24 @@ export default function Navbar() {
                   </span>
                 )}
               </button>
+              <Link
+                href="/favoritos"
+                className="relative p-2 rounded-lg text-foreground/80 hover:bg-surface-hover transition-colors"
+                aria-label="Abrir favoritos"
+              >
+                <svg className="h-5 w-5 sm:h-6 sm:w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12.001 5.2c1.9-2.08 5.2-2.32 7.38-.64 2.53 1.95 2.66 5.75.4 7.86L12 20.2l-7.78-7.78c-2.26-2.11-2.13-5.91.4-7.86 2.18-1.68 5.48-1.44 7.38.64z"
+                  />
+                </svg>
+                {wishlistCount > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 bg-brand text-white text-xs font-bold rounded-full min-w-[1.25rem] h-5 flex items-center justify-center px-1">
+                    {wishlistCount}
+                  </span>
+                )}
+              </Link>
 
               {session ? (
                 <div className="hidden md:block relative" ref={userMenuRef}>
@@ -184,8 +190,8 @@ export default function Navbar() {
                 onClick={() => setIsMenuOpen(false)}
                 aria-hidden="true"
               />
-              <div className="md:hidden mt-4 pb-4 border-t border-border pt-4 relative z-20 bg-surface rounded-b-xl shadow-lg">
-                <div className="flex justify-between items-center mb-4">
+              <div className="md:hidden mt-4 pb-5 border-t border-border pt-4 relative z-20 bg-surface rounded-b-xl shadow-lg shadow-brand/5">
+                <div className="flex justify-between items-center mb-4 px-2">
                   <span className="font-display font-semibold text-foreground">Menú</span>
                   <button
                     type="button"
@@ -198,27 +204,90 @@ export default function Navbar() {
                     </svg>
                   </button>
                 </div>
-                <div className="flex items-center gap-2 mb-4 px-2">
-                  <span className="text-sm text-foreground/80">Tema</span>
-                  <button
-                    type="button"
-                    onClick={toggleTheme}
-                    className="p-2 rounded-lg bg-surface-hover text-foreground"
-                  >
-                    {theme === "dark" ? "Claro" : "Oscuro"}
-                  </button>
+
+                <div className="space-y-5 px-2">
+                  <div>
+                    <span className="uppercase text-xs tracking-wide text-foreground/50">Ajustes rápidos</span>
+                    <div className="mt-2 flex items-center gap-3">
+                      <button
+                        type="button"
+                        onClick={toggleTheme}
+                        className="flex-1 flex items-center justify-center gap-2 rounded-xl border border-border bg-surface-hover py-2.5 text-sm font-medium text-foreground"
+                      >
+                        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          {theme === "dark" ? (
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                          ) : (
+                            <>
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 3v2m0 14v2m9-9h-2M5 12H3m15.364 6.364l-1.414-1.414M6.343 6.343 4.93 4.93m12.728 0-1.414 1.414M6.343 17.657l-1.414 1.414" />
+                              <circle cx="12" cy="12" r="3" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} />
+                            </>
+                          )}
+                        </svg>
+                        {theme === "dark" ? "Modo claro" : "Modo oscuro"}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div>
+                    <span className="uppercase text-xs tracking-wide text-foreground/50">Accesos rápidos</span>
+                    <div className="mt-2 grid grid-cols-2 gap-3">
+                      <Link
+                        href="/"
+                        onClick={() => setIsMenuOpen(false)}
+                        className="rounded-xl border border-border bg-surface-hover p-3 text-center text-sm font-semibold text-foreground hover:border-brand hover:text-brand transition-colors"
+                      >
+                        Inicio
+                      </Link>
+                      <Link
+                        href="/favoritos"
+                        onClick={() => setIsMenuOpen(false)}
+                        className="relative rounded-xl border border-border bg-surface-hover p-3 text-center text-sm font-semibold text-foreground hover:border-brand hover:text-brand transition-colors"
+                      >
+                        Favoritos
+                        {wishlistCount > 0 && (
+                          <span className="absolute -top-1 -right-1 min-w-[1.5rem] rounded-full bg-brand px-1 text-center text-xs font-bold text-white">
+                            {wishlistCount}
+                          </span>
+                        )}
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsMenuOpen(false);
+                          setIsCartOpen(true);
+                        }}
+                        className="relative rounded-xl border border-border bg-surface-hover p-3 text-center text-sm font-semibold text-foreground hover:border-brand hover:text-brand transition-colors"
+                      >
+                        Carrito
+                        {cartItemCount > 0 && (
+                          <span className="absolute -top-1 -right-1 min-w-[1.5rem] rounded-full bg-brand px-1 text-center text-xs font-bold text-white">
+                            {cartItemCount}
+                          </span>
+                        )}
+                      </button>
+                      {session ? (
+                        <Link
+                          href="/perfil"
+                          onClick={() => setIsMenuOpen(false)}
+                          className="rounded-xl border border-border bg-surface-hover p-3 text-center text-sm font-semibold text-foreground hover:border-brand hover:text-brand transition-colors"
+                        >
+                          Mi Perfil
+                        </Link>
+                      ) : (
+                        <Link
+                          href="/auth/login"
+                          onClick={() => setIsMenuOpen(false)}
+                          className="rounded-xl border border-border bg-surface-hover p-3 text-center text-sm font-semibold text-foreground hover:border-brand hover:text-brand transition-colors"
+                        >
+                          Iniciar sesión
+                        </Link>
+                      )}
+                    </div>
+                  </div>
                 </div>
-                <nav className="flex flex-col gap-1">
-                  {navItems.map((item) => (
-                    <Link
-                      key={item.name}
-                      href={item.href}
-                      className="px-4 py-3 text-foreground hover:bg-surface-hover rounded-lg transition-colors"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      {item.name}
-                    </Link>
-                  ))}
+
+                <nav className="mt-5 flex flex-col gap-1 px-2">
                   {session ? (
                     <>
                       <Link
