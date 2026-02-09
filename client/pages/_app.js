@@ -1,6 +1,7 @@
 import "@/styles/globals.css";
 import { Toaster } from "react-hot-toast";
 import { SessionProvider } from "next-auth/react";
+import { Analytics } from "@vercel/analytics/next";
 import Footer from "@/components/Footer";
 import { useEffect } from "react";
 import useStore from "@/store/store";
@@ -25,6 +26,7 @@ export default function App({ Component, pageProps }) {
           <Component {...pageProps} />
         </main>
         <Footer />
+        <Analytics />
       </div>
     </SessionProvider>
   );
