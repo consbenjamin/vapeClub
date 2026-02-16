@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useRef } from "react";
 import Card from "@/components/Card";
 import Hero from "@/components/Hero";
 import Navbar from "@/components/NavBar";
@@ -47,6 +47,22 @@ export default function Home() {
     router.push(`/producto/${productId}`);
   };
 
+  const productsSectionRef = useRef(null);
+  const [productsInView, setProductsInView] = useState(false);
+
+  useEffect(() => {
+    const el = productsSectionRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) setProductsInView(true);
+      },
+      { threshold: 0.1, rootMargin: "0px 0px -50px 0px" }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <>
       <Head>
@@ -58,8 +74,17 @@ export default function Home() {
         <Hero />
 
         <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 flex-grow max-w-7xl">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
-            <h2 id="productos" className="font-display text-xl sm:text-2xl font-bold text-foreground">
+          <div
+            id="productos"
+            ref={productsSectionRef}
+            className="scroll-mt-24"
+          >
+          <div
+            className={`flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6 transition-all duration-700 ease-out ${
+              productsInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+            }`}
+          >
+            <h2 className="font-display text-xl sm:text-2xl font-bold text-foreground">
               Productos
             </h2>
             <div className="flex flex-col sm:flex-row gap-3 sm:items-center w-full lg:w-auto">
@@ -82,22 +107,41 @@ export default function Home() {
           </div>
 
           {loading && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+            <div
+              className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 transition-all duration-700 ease-out delay-150 ${
+                productsInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+              }`}
+            >
               {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
                 <ProductCardSkeleton key={i} />
               ))}
             </div>
           )}
           {error && (
-            <p className="text-center text-red-500 dark:text-red-400 py-8" role="alert">
+            <p
+              className={`text-center text-red-500 dark:text-red-400 py-8 transition-all duration-700 ${
+                productsInView ? "opacity-100" : "opacity-0"
+              }`}
+              role="alert"
+            >
               {error}
             </p>
           )}
           {!loading && !error && products.length === 0 && (
-            <p className="text-center text-foreground/70 py-12">No hay productos disponibles.</p>
+            <p
+              className={`text-center text-foreground/70 py-12 transition-all duration-700 ${
+                productsInView ? "opacity-100" : "opacity-0"
+              }`}
+            >
+              No hay productos disponibles.
+            </p>
           )}
           {!loading && !error && products.length > 0 && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+            <div
+              className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 transition-all duration-700 ease-out delay-150 ${
+                productsInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+              }`}
+            >
               {filteredAndSortedProducts.map((product) => (
                 <Card
                   key={product._id}
@@ -118,8 +162,15 @@ export default function Home() {
             </div>
           )}
           {!loading && !error && products.length > 0 && filteredAndSortedProducts.length === 0 && (
-            <p className="text-center text-foreground/70 py-8">No hay productos que coincidan con tu búsqueda.</p>
+            <p
+              className={`text-center text-foreground/70 py-8 transition-all duration-700 ${
+                productsInView ? "opacity-100" : "opacity-0"
+              }`}
+            >
+              No hay productos que coincidan con tu búsqueda.
+            </p>
           )}
+          </div>
         </div>
       </div>
     </>

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 
 // Video de vapor multicolor (Pexels - royalty free). Ideal para ecommerce de vapes.
 const HERO_VIDEO_SRC =
@@ -13,6 +13,13 @@ export default function Hero() {
   useEffect(() => {
     const t = setTimeout(() => setIsVisible(true), 100);
     return () => clearTimeout(t);
+  }, []);
+
+  const scrollToProducts = useCallback(() => {
+    const el = document.getElementById("productos");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
   }, []);
 
   return (
@@ -28,7 +35,7 @@ export default function Hero() {
           loop
           playsInline
           className="absolute inset-0 w-full h-full object-cover scale-105"
-          poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2560 1440'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%230d9488'/%3E%3Cstop offset='100%25' stop-color='%23134e4a'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect fill='url(%23g)' width='2560' height='1440'/%3E%3C/svg%3E"
+          poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2560 1440'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%237c3aed'/%3E%3Cstop offset='100%25' stop-color='%234c1d95'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect fill='url(%23g)' width='2560' height='1440'/%3E%3C/svg%3E"
           onLoadedData={() => setVideoLoaded(true)}
         >
           <source src={HERO_VIDEO_SRC} type="video/mp4" />
@@ -72,13 +79,14 @@ export default function Hero() {
             className="flex justify-center animate-slide-up"
             style={{ transitionDelay: "600ms" }}
           >
-            <a
-              href="#productos"
-              className="group inline-flex items-center gap-2 px-6 py-3.5 sm:px-8 sm:py-4 rounded-xl bg-brand text-white font-semibold shadow-lg shadow-brand/30 hover:bg-brand-light dark:hover:bg-brand-light dark:text-slate-900 hover:shadow-xl hover:scale-105 active:scale-100 transition-all duration-300"
+            <button
+              type="button"
+              onClick={scrollToProducts}
+              className="group inline-flex items-center gap-2 px-6 py-3.5 sm:px-8 sm:py-4 rounded-xl bg-brand text-white font-semibold shadow-lg shadow-brand/30 hover:bg-brand-light dark:hover:bg-brand-light dark:text-slate-900 hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 ease-out focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-transparent"
             >
               Ver productos
               <svg
-                className="w-5 h-5 group-hover:translate-x-1 transition-transform"
+                className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -90,7 +98,7 @@ export default function Hero() {
                   d="M17 8l4 4m0 0l-4 4m4-4H3"
                 />
               </svg>
-            </a>
+            </button>
           </div>
         </div>
       </div>
