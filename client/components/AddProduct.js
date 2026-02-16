@@ -10,7 +10,6 @@ export default function AddProduct({ onAdd, onCancel }) {
     marca: "",
     sabores: [],
     imagen: null,
-    destacado: false,
   });
 
   const { addProduct, productAdded, set } = useStore();
@@ -70,7 +69,6 @@ export default function AddProduct({ onAdd, onCancel }) {
       marca: product.marca,
       precio: parseFloat(product.precio),
       sabores: product.sabores.filter((sabor) => sabor.trim() !== "").map((sabor) => ({ sabor: sabor.trim() })),
-      destacado: product.destacado,
     };
 
     try {
@@ -183,16 +181,6 @@ export default function AddProduct({ onAdd, onCancel }) {
                 className="mt-2 max-h-32 w-auto object-contain border border-border rounded-lg bg-surface-hover"
               />
             )}
-          </div>
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              name="destacado"
-              checked={product.destacado}
-              onChange={handleChange}
-              className="h-4 w-4 rounded border-border text-brand focus:ring-brand bg-surface"
-            />
-            <label className="text-foreground">Destacado</label>
           </div>
           <div className="flex flex-col gap-2 pt-2">
             <button

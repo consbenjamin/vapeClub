@@ -28,7 +28,7 @@ router.get('/:id', async (req, res) => {
 
 router.post('/', async (req, res) => {
   try {
-    const { nombre, descripcion, precio, marca, sabores, destacado } = req.body;
+    const { nombre, descripcion, precio, marca, sabores } = req.body;
   
     const nuevoProducto = new Producto({
       nombre,
@@ -37,7 +37,6 @@ router.post('/', async (req, res) => {
       marca,
       sabores,
       imagen: '',
-      destacado,
     });
     const productoGuardado = await nuevoProducto.save();
     res.status(201).json(productoGuardado);
@@ -54,7 +53,6 @@ router.post('/:id/imagen', upload.single('imagen'), async (req, res) => {
       return res.status(400).json({ error: 'Se debe proporcionar una imagen.' });
     }
     const uploadResult = await cloudinary.uploader.upload(req.file.path);
-    console.log(req.file)
     const productoActualizado = await Producto.findByIdAndUpdate(
       id,
       { imagen: uploadResult.secure_url },

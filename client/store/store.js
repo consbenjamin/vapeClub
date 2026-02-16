@@ -99,8 +99,6 @@ const useStore = create((set, get) => ({
 
   setError: (errorMessage) => set({ error: errorMessage }),
 
-  setLoading: (isLoading) => set({ loading: isLoading }),
-
   fetchProducts: async () => {
     set({ loading: true });
     const baseUrl = getBaseUrl();
@@ -285,20 +283,6 @@ const useStore = create((set, get) => ({
       return { cart: [] };
     }),
 
-  addToWishlist: (product) =>
-    set((state) => {
-      const exists = state.wishlist.some((item) => item._id === product._id);
-      if (exists) return {};
-      const newWishlist = [...state.wishlist, product];
-      saveWishlistToStorage(newWishlist);
-      return { wishlist: newWishlist };
-    }),
-  removeFromWishlist: (productId) =>
-    set((state) => {
-      const newWishlist = state.wishlist.filter((item) => item._id !== productId);
-      saveWishlistToStorage(newWishlist);
-      return { wishlist: newWishlist };
-    }),
   toggleWishlist: (product) =>
     set((state) => {
       const exists = state.wishlist.some((item) => item._id === product._id);

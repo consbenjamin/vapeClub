@@ -145,16 +145,6 @@ export default function EditProduct({ product = {}, onEdit, onCancel }) {
             className={`${inputClass} file:mr-2 file:py-1 file:px-3 file:rounded file:border-0 file:bg-brand file:text-white file:text-sm`}
           />
         </div>
-        <div className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            name="destacado"
-            checked={editedProduct.destacado || false}
-            onChange={handleChange}
-            className="h-4 w-4 rounded border-border text-brand focus:ring-brand bg-surface"
-          />
-          <label className="text-foreground">Destacado</label>
-        </div>
         <div className="flex flex-col gap-2 pt-2">
           <button
             type="submit"

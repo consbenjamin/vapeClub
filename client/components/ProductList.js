@@ -12,7 +12,6 @@ export default function ProductList ({ productos, onEdit, onDelete }) {
     { name: "Marca", align: "left" },
     { name: "Sabores", align: "left" },
     { name: "Imagen", align: "left" },
-    { name: "Destacado", align: "center" },
     { name: "Acciones", align: "center" },
   ];
 
@@ -48,9 +47,6 @@ export default function ProductList ({ productos, onEdit, onDelete }) {
                   src={producto?.imagen} 
                   alt={producto.nombre} 
                   className="w-16 h-16 object-cover rounded-md" />
-              </td>
-              <td className="px-4 sm:px-6 py-4 border-b border-border text-center text-sm text-foreground">
-                {producto.destacado ? "Sí" : "No"}
               </td>
               <td className="px-4 sm:px-6 py-4 border-b border-border text-center text-sm">
                 <div className="flex flex-col items-center gap-2">

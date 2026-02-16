@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import Card from "@/components/Card";
-import Carousel from "@/components/Carousel";
+import Hero from "@/components/Hero";
 import Navbar from "@/components/NavBar";
 import SearchBar from "@/components/SearchBar";
 import useStore from "@/store/store";
@@ -55,26 +55,9 @@ export default function Home() {
       </Head>
       <Navbar />
       <div className="flex-grow flex flex-col">
-        <section className="bg-gradient-to-br from-brand-50 to-brand-100/50 dark:from-brand-900/30 dark:to-brand-800/20 py-12 sm:py-16 px-4">
-          <div className="container mx-auto text-center max-w-2xl">
-            <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-4">
-              Tu tienda de vaping
-            </h1>
-            <p className="text-foreground/80 text-base sm:text-lg mb-6 sm:mb-8">
-              Productos de calidad, envíos rápidos y el mejor asesoramiento.
-            </p>
-            <a
-              href="#productos"
-              className="inline-flex items-center px-5 py-2.5 sm:px-6 sm:py-3 rounded-xl bg-brand text-white font-semibold hover:bg-brand-dark dark:hover:bg-brand-light transition-colors shadow-md"
-            >
-              Ver productos
-            </a>
-          </div>
-        </section>
+        <Hero />
 
         <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 flex-grow max-w-7xl">
-          <Carousel products={products} />
-
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
             <h2 id="productos" className="font-display text-xl sm:text-2xl font-bold text-foreground">
               Productos

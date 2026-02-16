@@ -43,7 +43,7 @@ export default function Navbar() {
 
   return (
     <>
-      <header className="sticky top-0 z-20 border-b border-border bg-surface/95 dark:bg-surface backdrop-blur">
+      <header className="sticky top-0 z-20 border-b border-border bg-surface shadow-[0_1px_3px_rgba(0,0,0,0.06)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.2)] dark:bg-surface/95 dark:backdrop-blur">
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between gap-4">
             <Link href="/" className="text-xl sm:text-2xl font-display font-bold text-foreground shrink-0">

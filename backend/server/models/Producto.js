@@ -29,10 +29,6 @@ const ProductoSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
-  destacado: {
-    type: Boolean,
-    default: false,
-  },
 }, { timestamps: true});
 
 module.exports = mongoose.models.Producto || mongoose.model('Producto', ProductoSchema);

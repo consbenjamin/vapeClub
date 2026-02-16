@@ -30,6 +30,12 @@ export default function CartModal({ onClose }) {
       toast.error("El carrito está vacío");
       return;
     }
+    if (!URL) {
+      toast.error(
+        "URL del backend no configurada. Revisá .env.local (NEXT_PUBLIC_NEXT_LOCAL_URL) y reiniciá el dev server."
+      );
+      return;
+    }
     try {
       setIsLoading(true);
       const response = await fetch(`${URL}/api/payment/create_preference`, {
@@ -37,11 +43,24 @@ export default function CartModal({ onClose }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ cart }),
       });
-      if (!response.ok) throw new Error("No se pudo crear la preferencia de pago");
-      const data = await response.json();
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        const detailMsg =
+          typeof data.details === "string"
+            ? data.details
+            : data.details?.message;
+        toast.error(
+          detailMsg || data.error || "No se pudo crear la preferencia de pago"
+        );
+        return;
+      }
+      if (!data.init_point) {
+        toast.error(data.error || "No se recibió el link de pago");
+        return;
+      }
       window.location.href = data.init_point;
     } catch (error) {
-      toast.error("Hubo un problema al procesar el pago");
+      toast.error(error.message || "Hubo un problema al procesar el pago");
     } finally {
       setIsLoading(false);
     }
