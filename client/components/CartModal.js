@@ -2,12 +2,14 @@ import useStore from "@/store/store";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
+import { Wallet } from "@mercadopago/sdk-react";
 
 export default function CartModal({ onClose }) {
   const cart = useStore((state) => state.cart);
   const removeFromCart = useStore((state) => state.removeFromCart);
   const clearCart = useStore((state) => state.clearCart);
   const [isLoading, setIsLoading] = useState(false);
+  const [preferenceId, setPreferenceId] = useState(null);
 
   const URL = process.env.NEXT_PUBLIC_NEXT_LOCAL_URL || process.env.NEXT_LOCAL_URL || process.env.NEXT_PUBLIC_URL;
 
@@ -54,11 +56,11 @@ export default function CartModal({ onClose }) {
         );
         return;
       }
-      if (!data.init_point) {
-        toast.error(data.error || "No se recibió el link de pago");
+      if (!data.id) {
+        toast.error(data.error || "No se recibió la preferencia de pago");
         return;
       }
-      window.location.href = data.init_point;
+      setPreferenceId(data.id);
     } catch (error) {
       toast.error(error.message || "Hubo un problema al procesar el pago");
     } finally {
@@ -140,21 +142,38 @@ export default function CartModal({ onClose }) {
                 </div>
               </div>
               <div className="mt-4 flex flex-col gap-3">
-                <button
-                  type="button"
-                  onClick={handleCheckout}
-                  disabled={isLoading}
-                  className="w-full py-3 rounded-xl bg-brand text-white font-semibold hover:bg-brand-dark dark:hover:bg-brand-light transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isLoading ? "Procesando..." : "Comprar"}
-                </button>
-                <button
-                  type="button"
-                  onClick={clearCart}
-                  className="w-full py-2.5 rounded-xl border border-border text-foreground font-medium hover:bg-surface-hover transition-colors"
-                >
-                  Vaciar carrito
-                </button>
+                {!preferenceId ? (
+                  <>
+                    <button
+                      type="button"
+                      onClick={handleCheckout}
+                      disabled={isLoading}
+                      className="w-full py-3 rounded-xl bg-brand text-white font-semibold hover:bg-brand-dark dark:hover:bg-brand-light transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isLoading ? "Procesando..." : "Pagar con Mercado Pago"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={clearCart}
+                      className="w-full py-2.5 rounded-xl border border-border text-foreground font-medium hover:bg-surface-hover transition-colors"
+                    >
+                      Vaciar carrito
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <div className="min-h-[48px]">
+                      <Wallet initialization={{ preferenceId }} />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setPreferenceId(null)}
+                      className="w-full py-2.5 rounded-xl border border-border text-foreground font-medium hover:bg-surface-hover transition-colors"
+                    >
+                      Volver al carrito
+                    </button>
+                  </>
+                )}
               </div>
             </>
           )}
