@@ -60,6 +60,11 @@ export default function CartModal({ onClose }) {
         toast.error(data.error || "No se recibió la preferencia de pago");
         return;
       }
+      const hasPublicKey = !!process.env.NEXT_PUBLIC_MP_PUBLIC_KEY?.trim();
+      if (!hasPublicKey && data.init_point) {
+        window.location.href = data.init_point;
+        return;
+      }
       setPreferenceId(data.id);
     } catch (error) {
       toast.error(error.message || "Hubo un problema al procesar el pago");
@@ -160,7 +165,7 @@ export default function CartModal({ onClose }) {
                       Vaciar carrito
                     </button>
                   </>
-                ) : (
+                ) : process.env.NEXT_PUBLIC_MP_PUBLIC_KEY?.trim() ? (
                   <>
                     <div className="min-h-[48px]">
                       <Wallet initialization={{ preferenceId }} />
@@ -173,6 +178,8 @@ export default function CartModal({ onClose }) {
                       Volver al carrito
                     </button>
                   </>
+                ) : (
+                  <p className="text-sm text-foreground/70 py-2">Clave de Mercado Pago no configurada. Volvé a intentar más tarde.</p>
                 )}
               </div>
             </>

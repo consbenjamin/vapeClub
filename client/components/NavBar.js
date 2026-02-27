@@ -13,7 +13,7 @@ export default function Navbar() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const userMenuRef = useRef(null);
   const { data: session } = useSession();
-  const { cart, theme, setTheme, wishlist } = useStore();
+  const { cart, theme, setTheme, wishlist, clearCart, clearWishlist } = useStore();
   const cartItemCount = cart.reduce((total, item) => total + item.quantity, 0);
   const wishlistCount = wishlist.length;
 
@@ -145,6 +145,8 @@ export default function Navbar() {
                       </Link>
                       <button
                         onClick={() => {
+                          clearCart();
+                          clearWishlist();
                           signOut();
                           setIsUserMenuOpen(false);
                         }}
@@ -306,6 +308,8 @@ export default function Navbar() {
                       </Link>
                       <button
                         onClick={() => {
+                          clearCart();
+                          clearWishlist();
                           signOut();
                           setIsMenuOpen(false);
                         }}

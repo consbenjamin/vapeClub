@@ -283,6 +283,12 @@ const useStore = create((set, get) => ({
       return { cart: [] };
     }),
 
+  clearWishlist: () =>
+    set(() => {
+      saveWishlistToStorage([]);
+      return { wishlist: [] };
+    }),
+
   toggleWishlist: (product) =>
     set((state) => {
       const exists = state.wishlist.some((item) => item._id === product._id);
