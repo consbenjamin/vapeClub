@@ -170,6 +170,9 @@ export default function CartModal({ onClose }) {
                     <div className="min-h-[48px]">
                       <Wallet initialization={{ preferenceId }} />
                     </div>
+                    <p className="text-xs text-foreground/60 mt-1">
+                      Si el botón no se activa, desactivá el bloqueador de anuncios para este sitio o probá en ventana privada.
+                    </p>
                     <button
                       type="button"
                       onClick={() => setPreferenceId(null)}

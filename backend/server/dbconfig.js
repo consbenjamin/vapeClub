@@ -1,6 +1,8 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
 require("dotenv").config();
 
 const productosRoutes = require('./routes/productos');
@@ -10,8 +12,27 @@ const paymentRoutes = require('./routes/payment');
 const app = express();
 const PORT = process.env.PORT || 5001;
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// OWASP A05 - Cabeceras de seguridad
+app.use(helmet({ contentSecurityPolicy: false }));
+
+// OWASP A04/A07 - Limitación de tasa para evitar fuerza bruta (auth y APIs sensibles)
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 200,
+  message: { error: "Demasiadas solicitudes, intente más tarde." },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  message: { error: "Demasiados intentos de acceso, intente más tarde." },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+app.use(express.json({ limit: "500kb" }));
+app.use(express.urlencoded({ extended: true, limit: "500kb" }));
 
 const allowedOrigins = [
   process.env.FRONTEND_URL,
@@ -28,9 +49,9 @@ app.use(cors({
   credentials: true
 }));
 
-app.use("/api/productos", productosRoutes);
-app.use("/api/user", userRoutes);
-app.use('/api/payment', paymentRoutes);
+app.use("/api/productos", apiLimiter, productosRoutes);
+app.use("/api/user", authLimiter, userRoutes);
+app.use('/api/payment', apiLimiter, paymentRoutes);
 
 
 mongoose.connect(process.env.MONGODB_URI)

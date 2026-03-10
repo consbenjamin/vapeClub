@@ -50,13 +50,18 @@ router.post('/create_preference', async (req, res) => {
     const total = items.reduce((acc, item) => 
       acc + (item.quantity * item.unit_price), 0);
 
-    const frontendUrl = process.env.FRONTEND_URL || '';
+    // OWASP A10 SSRF: usar solo FRONTEND_URL de confianza (env), no input del usuario
+    const frontendUrl = (process.env.FRONTEND_URL || "").trim().replace(/\/$/, "");
+    const allowedHosts = ["localhost", "vapeclub.vercel.app", "vapeclub-production.up.railway.app"];
+    const isAllowedUrl = allowedHosts.some((h) => frontendUrl.includes(h)) || frontendUrl.startsWith("http://localhost") || frontendUrl.startsWith("https://vapeclub");
+    const safeFrontendUrl = isAllowedUrl ? frontendUrl : "";
+
     const body = {
       items,
-      back_urls: frontendUrl ? {
-        success: `${frontendUrl}/success`,
-        failure: `${frontendUrl}/failure`,
-        pending: `${frontendUrl}/pending`
+      back_urls: safeFrontendUrl ? {
+        success: `${safeFrontendUrl}/success`,
+        failure: `${safeFrontendUrl}/failure`,
+        pending: `${safeFrontendUrl}/pending`
       } : undefined,
       external_reference: `cart_${Date.now()}`,
     };
@@ -76,11 +81,11 @@ router.post('/create_preference', async (req, res) => {
   } catch (error) {
     const mpError = error.response?.data;
     console.error('Error al crear la preferencia:', mpError || error.message, error);
+    // OWASP A05: no exponer detalles internos (mpError) al cliente
     const message = mpError?.message || (Array.isArray(mpError?.cause) ? mpError.cause.map(c => c.description).join('; ') : null) || error.message;
     res.status(500).json({
       error: 'No se pudo crear la preferencia de pago',
-      details: message,
-      mpError: mpError
+      details: process.env.NODE_ENV === 'development' ? message : 'Error interno. Intente más tarde.',
     });
   }
 });

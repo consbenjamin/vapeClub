@@ -4,6 +4,8 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const router = express.Router();
 const authenticateToken = require("../middlewares/auth");
+const requireAdmin = require("../middlewares/requireAdmin");
+const { securityLog } = require("../middlewares/securityLogger");
 
 router.get("/profile", authenticateToken, async (req, res) => {
   try {
@@ -17,7 +19,6 @@ router.get("/profile", authenticateToken, async (req, res) => {
     res.status(500).json({ error: "Error interno del servidor" });
   }
 });
-//TODO : implmentar rol de admin para asegurar ruta
 router.put("/profile", authenticateToken, async (req, res) => {
   const { name, email } = req.body;
 
@@ -39,11 +40,18 @@ router.put("/profile", authenticateToken, async (req, res) => {
   }
 });
 
+const emailRegex = /^\S+@\S+\.\S+$/;
+const sanitizeEmail = (e) => String(e).trim().toLowerCase().slice(0, 254);
+
 router.post("/google", async (req, res) => {
   const { email, name, image } = req.body;
 
   if (!email || !name) {
     return res.status(400).json({ error: "Email y nombre son requeridos" });
+  }
+  const emailSanitized = sanitizeEmail(email);
+  if (!emailRegex.test(emailSanitized)) {
+    return res.status(400).json({ error: "Email inválido" });
   }
 
   try {
@@ -51,13 +59,13 @@ router.post("/google", async (req, res) => {
       return res.status(500).json({ error: "Configuración del servidor incompleta" });
     }
 
-    let user = await User.findOne({ email });
+    let user = await User.findOne({ email: emailSanitized });
 
     if (!user) {
       user = new User({
-        name,
-        email,
-        image: image || null,
+        name: String(name).trim().slice(0, 120),
+        email: emailSanitized,
+        image: typeof image === "string" ? image.slice(0, 500) : null,
         provider: "google",
       });
       await user.save();
@@ -91,18 +99,25 @@ router.post("/register", async (req, res) => {
   if (!name || !email || !password) {
     return res.status(400).json({ error: "Todos los campos son obligatorios" });
   }
+  const emailSanitized = sanitizeEmail(email);
+  if (!emailRegex.test(emailSanitized)) {
+    return res.status(400).json({ error: "Email inválido" });
+  }
+  if (String(password).length < 8) {
+    return res.status(400).json({ error: "La contraseña debe tener al menos 8 caracteres" });
+  }
 
   try {
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ email: emailSanitized });
     if (existingUser) {
       return res.status(400).json({ error: "El email ya está registrado" });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // A02 OWASP: el modelo User tiene pre('save') que hashea; no hashear aquí para evitar doble hash
     const user = new User({
-      name,
-      email,
-      password: hashedPassword,
+      name: String(name).trim().slice(0, 120),
+      email: emailSanitized,
+      password,
       provider,
     });
 
@@ -122,20 +137,26 @@ router.post('/login', async (req, res) => {
     return res.status(400).json({ error: "Email y contraseña son requeridos" });
   }
 
+  const emailSanitized = sanitizeEmail(email);
+  if (!emailRegex.test(emailSanitized)) {
+    return res.status(400).json({ error: "Email inválido" });
+  }
+
   try {
     if (!process.env.JWT_SECRET) {
       throw new Error("JWT_SECRET no está definido en el entorno");
     }
 
-    const user = await User.findOne({ email }).select("+password");
+    const user = await User.findOne({ email: emailSanitized }).select("+password");
     if (!user) {
+      securityLog("LOGIN_FAILED", { reason: "user_not_found", email: emailSanitized });
       return res.status(401).json({ error: "Credenciales incorrectas" });
     }
 
-    // Comparar la contraseña ingresada con la almacenada
     const isPasswordCorrect = await user.comparePassword(password);
 
     if (!isPasswordCorrect) {
+      securityLog("LOGIN_FAILED", { reason: "invalid_password", userId: user._id?.toString() });
       return res.status(401).json({ error: "Credenciales incorrectas" });
     }
 
@@ -161,14 +182,9 @@ router.post('/login', async (req, res) => {
   }
 });
 
-router.get("/users", async (req, res) => {
+router.get("/users", authenticateToken, requireAdmin, async (req, res) => {
   try {
-    // Solo un admin puede ver todos los usuarios
-    if (req.user.role !== 'admin') {
-      return res.status(403).json({ error: "Acceso denegado" });
-    }
-
-    const users = await User.find().select("-password"); // Excluimos las contraseñas
+    const users = await User.find().select("-password");
     res.json(users);
   } catch (err) {
     console.error(err);
